@@ -48,12 +48,19 @@ else
     if plotFlag == true
         titleN = sprintf('Taps = %04d',taps);
         figure()
+        
         subplot(3,1,1)
         histogram(selectIn)
+        xlim([-5 5])
+        
         subplot(3,1,2)
         histogram(selectOut)
+        xlim([-5 5])
+        
         subplot(3,1,3)
         histogram(lmsOut)
+        xlim([-5 5])
+        
         sgtitle(titleN)
     end
     
