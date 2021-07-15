@@ -4,20 +4,20 @@
 clear; clc; close all;
 rng(123)
 tic
-taps = [3:10];
-step = 0.075;
-% step = linspace(1E-4,1E-1,25);
-trainNum = 2.^4;
-% trainNum = 2.^(3:9);
+taps = [2:10];
+% step = 0.075;
+step = linspace(1E-4,1E-1,10);
+% trainNum = 2.^7;
+trainNum = 2.^(3:9);
 indxM = combvec(taps,trainNum,step);
 runLen = 20;
 runTo = size(indxM,2)
 fullRun = runTo*runLen
-ww = ones(4,runTo,runLen);
+ww = ones(5,runTo,runLen);
 len = 13;
-for indx = 1:runTo
-    ber = lmsPick(indxM(:,indx),len,true);
-    w = combvec(indxM(:,indx),ber);
+parfor indx = 1:runTo
+    [ber,delay] = lmsPick(indxM(:,indx),len,false);
+    w = combvec(indxM(:,indx),ber,delay);
     w = w';
     ww(:,indx,len) = w;
     %         if mod(indx,1000)== 0

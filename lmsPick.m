@@ -1,4 +1,4 @@
-function ber = lmsPick(inM,fLen,plotFlag)
+function [ber,delay] = lmsPick(inM,fLen,plotFlag)
 % LMS EQ param scan
 % Montana State University
 % Electrical & Computer Engineering Department
@@ -8,7 +8,7 @@ function ber = lmsPick(inM,fLen,plotFlag)
 taps = inM(1);
 trainNum = inM(2);
 step = inM(3);
-refTap = floor(taps/2);
+refTap = ceil(taps/2);
 
 % load file
 loadName = sprintf('pam_snr_%02d_len_%04d_%04d',97,fLen*10,1);
@@ -44,6 +44,7 @@ lineq = comm.LinearEqualizer('Algorithm','LMS', 'NumTaps',taps,'ReferenceTap',re
 [lmsOut] = lineq(selectOut',trainingSymbols')';
 if any(isnan(lmsOut))
     ber = 2;
+    delay = 0.1;
 else
     if plotFlag == true
         titleN = sprintf('Taps = %04d',taps);
@@ -78,6 +79,23 @@ else
     cut2 = bitsLmsOut(delay+1:end);
     % get BER
     [~,ber] = biterr(cut1,cut2);
-end
+%     st = 2*taps;
+%     berR = ones(100*2+1,1);
+%     for delay = -st:st
+%         if delay < 0
+%             cut = abs(delay);
+%             cut1 = bitsLmsOut(1:end-cut);
+%             cut2 = bitsIn(cut+1:end);
+%         else
+%             cut1 = bitsIn(1:end-delay);
+%             cut2 = bitsLmsOut(delay+1:end);
+%         end
+%         % get BER
+%         [~,ber] = biterr(cut1,cut2);
+%         berR(delay+st+1) = ber;
+%     end
+%     [ber,i] = min(berR);
+%     delay = i - (st+1);
+% end
 
 end
