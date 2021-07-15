@@ -73,7 +73,7 @@ else
     elseif length(bitsOut) < length(bitsIn)
         bitsIn = bitsIn(1:length(bitsOut));
     end
-    delay = refTap-1;
+    delay = refTap - 1;
     cut1 = bitsIn(1:end-delay);
     cut2 = bitsLmsOut(delay+1:end);
     % get BER

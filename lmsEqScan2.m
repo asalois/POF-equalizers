@@ -4,10 +4,10 @@
 clear; clc; close all;
 rng(123)
 tic
-taps = [2:30 100:50:1000];
-step = 1E-1;
+taps = [3:10];
+step = 0.075;
 % step = linspace(1E-4,1E-1,25);
-trainNum = 2.^3;
+trainNum = 2.^4;
 % trainNum = 2.^(3:9);
 indxM = combvec(taps,trainNum,step);
 runLen = 20;
