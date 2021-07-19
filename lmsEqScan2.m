@@ -4,20 +4,28 @@
 clear; clc; close all;
 rng(123)
 tic
-taps = [2:10];
-% step = 0.075;
-step = linspace(1E-4,1E-1,10);
-% trainNum = 2.^7;
-trainNum = 2.^(3:9);
+stp = 25;
+
+% multi Param Sweep
+% taps = [2:(stp-1) stp:stp:1000];
+% taps = 2:15;
+% step = linspace(1E-4,1E-1,15);
+trainNum = 2.^(2:17);
+
+% single Param Sweep
+taps = 21;
+step = 0.001;
+% trainNum = 2.^12;
+
 indxM = combvec(taps,trainNum,step);
 runLen = 20;
 runTo = size(indxM,2)
 fullRun = runTo*runLen
 ww = ones(5,runTo,runLen);
 len = 13;
-parfor indx = 1:runTo
-    [ber,delay] = lmsPick(indxM(:,indx),len,false);
-    w = combvec(indxM(:,indx),ber,delay);
+for indx = 1:runTo
+    [ber,delay] = lmsPick(indxM(:,indx),len,true);
+    w = combvec(indxM(:,indx),delay,ber);
     w = w';
     ww(:,indx,len) = w;
     %         if mod(indx,1000)== 0
@@ -26,14 +34,15 @@ parfor indx = 1:runTo
     
 end
 xx = ww(:,:,len);
-toc
-save('scan7v1','xx')
-%%
 
-[mn,mi] = min(xx(4,:));
+% toc
+% save('scan7v1','xx')
+% xx = ww(:,:,13);
+
+[mn,mi] = min(xx(5,:));
 xx(:,mi)
-xx(4,mi)
-
+xx(5,mi)
+toc
 
 
 
