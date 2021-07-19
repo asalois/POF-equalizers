@@ -47,7 +47,7 @@ if any(isnan(lmsOut))
     delay = 0.1;
 else
     if plotFlag == true
-        titleN = sprintf('Taps = %04d',taps);
+        titleN = sprintf('Taps=%4d  Step=%0.4f Train=%5d',taps,step,trainNum);
         figure()
         
         subplot(3,1,1)
@@ -79,23 +79,23 @@ else
     cut2 = bitsLmsOut(delay+1:end);
     % get BER
     [~,ber] = biterr(cut1,cut2);
-%     st = 2*taps;
-%     berR = ones(100*2+1,1);
-%     for delay = -st:st
-%         if delay < 0
-%             cut = abs(delay);
-%             cut1 = bitsLmsOut(1:end-cut);
-%             cut2 = bitsIn(cut+1:end);
-%         else
-%             cut1 = bitsIn(1:end-delay);
-%             cut2 = bitsLmsOut(delay+1:end);
-%         end
-%         % get BER
-%         [~,ber] = biterr(cut1,cut2);
-%         berR(delay+st+1) = ber;
-%     end
-%     [ber,i] = min(berR);
-%     delay = i - (st+1);
-% end
-
+    %     st = 2*taps;
+    %     berR = ones(100*2+1,1);
+    %     for delay = -st:st
+    %         if delay < 0
+    %             cut = abs(delay);
+    %             cut1 = bitsLmsOut(1:end-cut);
+    %             cut2 = bitsIn(cut+1:end);
+    %         else
+    %             cut1 = bitsIn(1:end-delay);
+    %             cut2 = bitsLmsOut(delay+1:end);
+    %         end
+    %         % get BER
+    %         [~,ber] = biterr(cut1,cut2);
+    %         berR(delay+st+1) = ber;
+    %     end
+    %     [ber,i] = min(berR);
+    %     delay = i - (st+1);
+end
+    
 end
