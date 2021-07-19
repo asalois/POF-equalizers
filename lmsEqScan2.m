@@ -9,7 +9,7 @@ stp = 25;
 % multi Param Sweep
 % taps = [2:(stp-1) stp:stp:1000];
 % taps = 2:15;
-% step = linspace(1E-4,1E-1,15);
+% step = linspace(1E-4,1E-1,15git );
 trainNum = 2.^(2:17);
 
 % single Param Sweep
