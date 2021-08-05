@@ -7,7 +7,7 @@ tic
 stp = 25;
 taps = [2:(stp-1) stp:stp:1000];
 step = linspace(1E-4,1E-1,50);
-trainNum = 2.^(5:14);
+trainNum = 2.^(3:14);
 indxM = combvec(taps,trainNum,step);
 runLen = 20;
 runTo = size(indxM,2)
