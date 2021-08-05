@@ -39,13 +39,13 @@ fiberLength = 13;
 
 
 %%
-iters = 50;
+iters = 10;
 % for i = 1:5
 [berA, x] = lmsSNRvBER([2 2^10 0.01],fiberLength,iters);
-tic
-[berC, ~] = dfeSNRvBER([2 2^10 2^7],fiberLength,iters);
-tic
-berA = [berA; berC]
+toc
+[berC, ~] = dfeSNRvBER([2 1 2^7],fiberLength,iters);
+toc
+berB = [berA; berC];
 %     if i == 1
 %         berB = berA;
 %     else
@@ -58,8 +58,9 @@ figure()
 semilogy(x,berB','-*')
 xlabel('SNR [dB]')
 ylabel('BER')
+legend('NO EQ','LMS','DFE','Location','southwest')
 % plotTitle = sprintf('SNR vs BER with %03d taps', i+1);
-title(plotTitle)
+% title(plotTitle)
 % saveName = sprintf('SNRvBER_taps_%03d.png', i+1);
 % saveas(gcf,saveName)
 
