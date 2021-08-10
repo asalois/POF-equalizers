@@ -1,14 +1,8 @@
-function [berR,x]=lmsSNRvBER(inM,fLen,iters)
+function [berR,x]=annSNRvBER(neurons,trainNum,epochs,fLen,iters)
 % LMS EQ Graph
 % Montana State University
 % Electrical & Computer Engineering Department
 % Created by Alexander Salois
-
-% runToSNR = inM(1);
-taps = inM(1);
-trainNum = inM(2);
-step = inM(3);
-refTap = ceil(taps/2);
 
 % load file
 loadName = sprintf('pam_snr_%02d_len_%04d_%04d',97,fLen*10,1);
@@ -19,11 +13,11 @@ symbolPeriod = log2(M)*2^pointsPerBit; % in samples
 
 % rescale to work with pamdemod
 inSig = real(InNode{1,2}.Signal.samples);
-inSig = inSig*6 -3;
+%inSig = inSig*6 -3;
 outSig = real(InNode{1,1}.Signal.samples);
 outSig = outSig - min(outSig);
 outSig = outSig/max(outSig);
-outSig = outSig*6 -3;
+%outSig = outSig*6 -3;
 
 % outSigSNR = awgn(outSig,SNR,'measured');
 outSigSNR = outSig;
@@ -44,30 +38,42 @@ for i = 1:iters
         numTrainSymbols = trainNum;
         trainingSymbols = selectOutSNR(1:numTrainSymbols);
         
-        % eq setup
-        lineq = comm.LinearEqualizer('Algorithm','LMS', 'NumTaps',taps,'ReferenceTap',refTap,...
-            'InputSamplesPerSymbol',1,'Constellation',real(pammod(0:3,4)),'StepSize',step);
+	% Define network
+	hLayers = neurons; % hidden layer size4
+	Eqnet = fitnet(hLayers,'traingd'); % make a fitnet
+	Eqnet.trainParam.epochs = epochs;
+	Eqnet.trainParam.min_grad = 1E-8;
+	Eqnet.trainParam.showWindow = false;
+	Eqnet.trainParam.show = 500;
+	Eqnet.trainParam.showCommandLine = true;
         
-        % Use LMS Equalizer
-        [lmsOut] = lineq(selectOutSNR',trainingSymbols')';
-        if any(isnan(lmsOut))
+	% make data the right size
+	samples = 15;
+	data= makeInputMat(selectOutSNR,samples);
+	data = data(:,1:trainNum);
+	target = selectIn(samples+1:trainNum+samples);
+	[Eqnet,TT] = train(Eqnet,data,target,'useGPU', 'yes'); % use when gpu
+	annOut = Eqnet(data);
+
+        if any(isnan(annOut))
             berLMS = 2;
             ber = 2;
         else
-	    bitsIn = pamdemod(selectIn,M);
-	    bitsOut = pamdemod(selectOutSNR,M);
-	    bitsLmsOut = pamdemod(lmsOut,M);
-            delay = refTap - 1;
-            cut1 = bitsIn(1:end-delay);
-            cut2 = bitsLmsOut(delay+1:end);
+            bitsIn = pamdemod(selectIn*6-3,M);
+	    bitsIn = bitsIn(samples+1:end-samples);
+            bitsOut = pamdemod(selectOutSNR*6-3,M);
+            bitsannOut = pamdemod(annOut*6-3,M);
+	    bitsannOut = bitsannOut;
+	    size(bitsIn)
+	    size(bitsannOut)
             % get BER
-            [~,ber] = biterr(bitsIn,bitsOut);
-            [~,berLMS] = biterr(cut1,cut2);
+            [~,berann] = biterr(bitsIn,bitsannOut)
+	    snr
+	    i
         end
-        berR(i,snr - (start-1)) = ber;
-        berRLMS(i,snr - (start-1)) = berLMS;
+        berR(i,snr - (start-1)) = berann;
     end
 end
 % berR = [mean(berR,1); mean(berRLMS,1)];
-berR = [min(berR,[],1); min(berRLMS,[],1)];
+berR = [min(berR,[],1)]
 end

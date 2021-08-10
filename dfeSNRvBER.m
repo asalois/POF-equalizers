@@ -53,16 +53,10 @@ for i = 1:iters
         [dfeOut] = dfe(selectOutSNR',trainingSymbols')';
         if any(isnan(dfeOut))
             berDfe = 2;
-        else
-            bitsIn = pamdemod(selectIn,M);
-            bitsOut = pamdemod(selectOutSNR,M);
-            bitsLmsOut = pamdemod(dfeOut,M);
-            if length(bitsIn) < length(bitsOut)
-                bitsOut = bitsOut(1:length(bitsIn));
-                bitsLmsOut = bitsLmsOut(1:length(bitsIn));
-            elseif length(bitsOut) < length(bitsIn)
-                bitsIn = bitsIn(1:length(bitsOut));
-            end
+	else
+	    bitsIn = pamdemod(selectIn,M);
+	    bitsOut = pamdemod(selectOutSNR,M);
+	    bitsLmsOut = pamdemod(dfeOut,M);
             delay = refTap - 1;
             cut1 = bitsIn(1:end-delay);
             cut2 = bitsLmsOut(delay+1:end);
