@@ -12,9 +12,13 @@ toc
 toc
 [berC, ~] = dfeSNRvBER([2 1 2^8],fiberLength,iters);
 toc
-[berE, ~] = annSNRvBER(40,(2^17 - 30),10000,fiberLength,2);
+
+%%
+tic
+[berE, ~] = annSNRvBER(40,(2^17 - 30),5000,fiberLength,1);
 toc
-[berF, ~] = annlSNRvBER(40,(2^17 - 30),10000,fiberLength,2);
+[berF, ~] = annlSNRvBER(40,(2^17 - 30),5000,fiberLength,1);
+toc
 berD = [berA; berB; berC; berE; berF];
 
 
@@ -23,8 +27,8 @@ figure()
 semilogy(x,berD','-*')
 xlabel('SNR [dB]')
 ylabel('BER')
-legend('NO EQ','LMS','DFE 128','DFE 256','ANN','Location','southwest')
+legend('NO EQ','LMS','DFE 128','DFE 256','ANN','Linear ANN','Location','southwest')
 title('EQs for 13 m POF')
-saveas(gcf,'Eqsfor13mPOF.png')
-save('Eqsfor13mPOF')
-toc
+saveas(gcf,'Eqsfor13mPOF_2.png')
+save('Eqsfor13mPOF_2')
+% toc

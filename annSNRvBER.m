@@ -38,38 +38,40 @@ for i = 1:iters
         numTrainSymbols = trainNum;
         trainingSymbols = selectOutSNR(1:numTrainSymbols);
         
-	% Define network
-	hLayers = neurons; % hidden layer size4
-	Eqnet = fitnet(hLayers,'traingd'); % make a fitnet
-	Eqnet.trainParam.epochs = epochs;
-	Eqnet.trainParam.min_grad = 1E-8;
-	Eqnet.trainParam.showWindow = false;
-	Eqnet.trainParam.show = 500;
-	Eqnet.trainParam.showCommandLine = true;
+        % Define network
+        hLayers = neurons; % hidden layer size4
+        Eqnet = fitnet(hLayers); % make a fitnet
+        Eqnet.trainFcn = 'traingd'; 
+        Eqnet.layers{1}.transferFcn = 'tansig';
+        Eqnet.trainParam.epochs = epochs;
+        Eqnet.trainParam.min_grad = 1E-8;
+        Eqnet.trainParam.showWindow = false;
+        Eqnet.trainParam.show = 500;
+        Eqnet.trainParam.showCommandLine = true;
         
-	% make data the right size
-	samples = 15;
-	data= makeInputMat(selectOutSNR,samples);
-	data = data(:,1:trainNum);
-	target = selectIn(samples+1:trainNum+samples);
-	[Eqnet,TT] = train(Eqnet,data,target,'useGPU', 'yes'); % use when gpu
-	annOut = Eqnet(data);
-
+        % make data the right size
+        samples = 15;
+        data= makeInputMat(selectOutSNR,samples);
+        data = data(:,1:trainNum);
+        target = selectIn(samples+1:trainNum+samples);
+        [Eqnet,TT] = train(Eqnet,data,target,'useGPU', 'yes'); % use when gpu
+        annOut = Eqnet(data);
+        
         if any(isnan(annOut))
             berLMS = 2;
             ber = 2;
         else
             bitsIn = pamdemod(selectIn*6-3,M);
-	    bitsIn = bitsIn(samples+1:end-samples);
+            bitsIn = bitsIn(samples+1:end-samples);
             bitsOut = pamdemod(selectOutSNR*6-3,M);
             bitsannOut = pamdemod(annOut*6-3,M);
-	    bitsannOut = bitsannOut;
-	    size(bitsIn)
-	    size(bitsannOut)
+            bitsannOut = bitsannOut;
+            size(bitsIn)
+            size(bitsannOut)
             % get BER
             [~,berann] = biterr(bitsIn,bitsannOut)
-	    snr
-	    i
+            snr
+            i
         end
         berR(i,snr - (start-1)) = berann;
     end
