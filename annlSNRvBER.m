@@ -51,9 +51,8 @@ for i = 1:iters
         
         % make data the right size
         samples = 15;
-        data= makeInputMat(selectOutSNR,samples);
-        data = data(:,1:trainNum);
-        target = selectIn(samples+1:trainNum+samples);
+        data = makeInputMat(selectOutSNR,samples);
+        target = selectIn(samples+1:end-samples);
         [Eqnet,TT] = train(Eqnet,data,target,'useGPU', 'yes'); % use when gpu
         annOut = Eqnet(data);
         

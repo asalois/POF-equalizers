@@ -5,8 +5,8 @@ function runSearch(i)
 
 tic
 delete(gcp('nocreate'))
-maxNumCompThreads(8)
-parpool('local',8)
+% maxNumCompThreads(8)
+parpool('local',10)
 
 fiberLength = 13;
 

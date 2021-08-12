@@ -31,7 +31,6 @@ berR = zeros(1,runTo - start);
 berRLMS = zeros(1,runTo - start);
 x =  start:runTo;
 samples = 15;
-trainNum = 2^17 - 2*samples;
 for snr = start:runTo
 
 	selectOutSNR =  awgn(selectOut,snr,'measured');
@@ -48,10 +47,11 @@ for snr = start:runTo
 	Eqnet.trainParam.showCommandLine = true;
 
 	% make data the right size
-	data= makeInputMat(selectOutSNR,samples);
-	data = data(:,1:trainNum);
-	target = selectIn(samples+1:trainNum+samples);
-	[Eqnet,TT] = train(Eqnet,data,target,'useParallel', 'yes'); % use when gpu
+	data = makeInputMat(selectOutSNR,samples);
+    target = selectIn(samples+1:end-samples);
+    [Eqnet,TT] = train(Eqnet,data,target,'useParallel', 'yes');
+%     [Eqnet,TT] = train(Eqnet,data,target,'useParallel', 'no');
+%     [Eqnet,TT] = train(Eqnet,data,target,'useGPU', 'yes');
 	annOut = Eqnet(data);
 
 	if any(isnan(annOut))

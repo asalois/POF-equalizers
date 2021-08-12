@@ -4,9 +4,9 @@
 clear; clc; close all;
 rng(123)
 tic
-for k = 1:20
+for k = [13 20]
 	fiberLength = k
-	iters = 400;
+	iters = 100;
 	[berA, x] = lmsSNRvBER([2 2^10 0.01],fiberLength,iters);
 	toc
 	[berB, ~] = dfeSNRvBER([2 1 2^7],fiberLength,iters);
@@ -16,9 +16,9 @@ for k = 1:20
 
 	%
 	tic
-	%[berE, ~] = annSNRvBER(40,(2^17 - 30),5000,fiberLength,1);
+	%[berE, ~] = annSNRvBER(40,2^17,5000,fiberLength,1);
 	toc
-	[berF, ~] = annlSNRvBER(40,(2^17 - 30),5000,fiberLength,1);
+	[berF, ~] = annlSNRvBER(40,2^17,5000,fiberLength,1);
 	toc
 	%berD = [berA; berB; berC; berE; berF];
 	berD = [berA; berB; berC; berF];
