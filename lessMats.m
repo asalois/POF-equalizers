@@ -68,10 +68,13 @@ save('testData','testTarget','testIn');
 cv={};
 for i = 1:4
     cv = trainData(:,z(i,:));
-    cvTarget = cell2mat(cv(1,:));
-    cvIn = cell2mat(cv(2,:));
+    cvTestTarget = cell2mat(cv(1,:));
+    cvTestIn = cell2mat(cv(2,:));
+    cv = trainData(:,z(setdiff(1:4,i),:));
+    cvTrainTarget = cell2mat(cv(1,:));
+    cvTrainIn = cell2mat(cv(2,:));
     saveName = sprintf('cv%dData',i);
-    save(saveName,'cvTarget','cvIn');
+    save(saveName,'cvTestTarget','cvTestIn','cvTrainTarget','cvTrainIn');
 end
 
 
