@@ -7,19 +7,32 @@ import math
 import time
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 import numpy as np
+import tensorflow as tf
 from tensorflow import keras
 from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import Dense, Dropout
 from tensorflow.keras.optimizers import SGD
 from tensorflow.keras.losses import MeanSquaredError
 
+num_threads = 4
+# Maximum number of threads to use for OpenMP parallel regions.
+os.environ["OMP_NUM_THREADS"] = str(num_threads)
+# Without setting below 2 environment variables, it didn't work for me. Thanks to @cjw85
+os.environ["TF_NUM_INTRAOP_THREADS"] = str(num_threads)
+os.environ["TF_NUM_INTEROP_THREADS"] = str(num_threads)
+
+# tf threading
+tf.config.threading.set_intra_op_parallelism_threads(num_threads)
+tf.config.threading.set_inter_op_parallelism_threads(num_threads)
+tf.config.set_soft_device_placement(True)
+
 start_time = time.time()
 SNR = str(sys.argv[1])
 vb = 2
 
 num_classes = 1
-batch_size = 128
-epochs = 2
+batch_size = 32
+epochs = 10
 
 SNRs = str(SNR).zfill(2)
 print(SNRs)

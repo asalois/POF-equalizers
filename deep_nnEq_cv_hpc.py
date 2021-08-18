@@ -39,8 +39,8 @@ print('Cross Validation = ',cv)
 vb = 2
 
 num_classes = 1
-batch_size = 128
-epochs = 2
+batch_size = 32
+epochs = 10
 
 SNRs = str(SNR).zfill(2)
 
@@ -71,11 +71,13 @@ print(y_test.shape, 'test labels')
 
 
 # Formatting
-fmtLen = int(math.ceil(math.log(max(batch_size, y_train.shape[0]),10)))
+fmthhjkhkhklljlLen = int(math.ceil(math.log(max(batch_size, y_train.shape[0]),10)))
 
-# Define the network
+# Definetwork
 model = Sequential()
-model.add(Dense(40, activation='linear', input_dim=9))
+model.add(Dense(12, activation='relu', input_dim=9))
+model.add(Dense(num_classes, activation='linear'))
+model.add(Dense(num_classes, activation='linear'))
 model.add(Dense(num_classes, activation='linear'))
 
 model.summary()
