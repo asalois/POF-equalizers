@@ -28,75 +28,80 @@ tf.config.set_soft_device_placement(True)
 
 
 start_time = time.time()
-run = np.array(np.meshgrid(range(5,36),range(1,9))).T.reshape(-1,2)
-indx = int(sys.argv[1])
-SNR = run[indx,0]
-cv = run[indx,1]
-
-print('SNR = ',SNR)
-print('Cross Validation = ',cv)
+#run = np.array(np.meshgrid(range(5,36),range(1,9))).T.reshape(-1,2)
+snr = int(sys.argv[1])
+samples = int(sys.argv[2])
 
 vb = 2
-
+fiber_length = 20
 num_classes = 1
 batch_size = 32
 epochs = 10
 
-SNRs = str(SNR).zfill(2)
+print('SNR = ',snr)
+print('Cross Validation run')
+print('Samples = ', samples)
+print('Fiber Length = ', fiber_length)
 
-# Load the data
-matname = "snr" + SNRs + "/cv0" + str(cv) + "DataSnr" + SNRs + ".mat"
-print(matname)
-mat = spio.loadmat(matname, squeeze_me=False)
-x_train = mat['cvTrainIn']
-y_train = mat['cvTrainTarget']
-x_test = mat['cvTestIn']
-y_test = mat['cvTestTarget']
-
-x_train = np.transpose(x_train)
-y_train = np.transpose(y_train)
-x_test = np.transpose(x_test)
-y_test = np.transpose(y_test)
+start_dir = '/mnt/lustrefs/scratch/v16b915/pof_data/fiberLen'
+start_dir += str(fiber_length).zfill(2)
+start_dir += '/' + str(samples) + '_samples/snr'
 
 
-# Convert the data to floats between 0 and 1.
-x_train = x_train.astype('float32')
-y_train = y_train.astype('float32')
-x_test = x_test.astype('float32')
-y_test = y_test.astype('float32')
-print(x_train.shape, 'train samples')
-print(y_train.shape, 'train labels')
-print(x_test.shape, 'test samples')
-print(y_test.shape, 'test labels')
+SNRs = str(snr).zfill(2)
+
+for cv in range(1,9):
+    # Load the data
+    matname = start_dir + SNRs + '/cv0' + str(cv) + 'DataSnr' + SNRs + '.mat'
+    print(matname)
+    mat = spio.loadmat(matname, squeeze_me=False)
+    x_train = mat['cvTrainIn']
+    y_train = mat['cvTrainTarget']
+    x_test = mat['cvTestIn']
+    y_test = mat['cvTestTarget']
+
+    x_train = np.transpose(x_train)
+    y_train = np.transpose(y_train)
+    x_test = np.transpose(x_test)
+    y_test = np.transpose(y_test)
 
 
-# Formatting
-fmthhjkhkhklljlLen = int(math.ceil(math.log(max(batch_size, y_train.shape[0]),10)))
+    # Convert the data to floats between 0 and 1.
+    x_train = x_train.astype('float32')
+    y_train = y_train.astype('float32')
+    x_test = x_test.astype('float32')
+    y_test = y_test.astype('float32')
+    print(x_train.shape, 'train samples')
+    print(y_train.shape, 'train labels')
+    print(x_test.shape, 'test samples')
+    print(y_test.shape, 'test labels')
 
-# Definetwork
-model = Sequential()
-model.add(Dense(12, activation='relu', input_dim=9))
-model.add(Dense(num_classes, activation='linear'))
-model.add(Dense(num_classes, activation='linear'))
-model.add(Dense(num_classes, activation='linear'))
 
-model.summary()
+    # Formatting
+    fmtLen = int(math.ceil(math.log(max(batch_size, y_train.shape[0]),10)))
 
-model.compile(loss=keras.metrics.mean_squared_error,
-              optimizer=SGD(),
-              metrics=[keras.metrics.RootMeanSquaredError(name='rmse')])
+    # Definetwork
+    model = Sequential()
+    model.add(Dense(12, activation='linear', input_dim=(2*samples+1)))
+    model.add(Dense(num_classes, activation='linear'))
 
-history = model.fit(x_train, y_train,
-                    batch_size=batch_size,
-                    epochs=epochs,
-                    verbose=vb)
+    model.summary()
 
-score = model.evaluate(x_train, y_train, verbose=vb)
-print('Final Training MSE:', score[0])
-print('Final Training RMSE:', score[1])
+    model.compile(loss=keras.metrics.mean_squared_error,
+                  optimizer=SGD(),
+                  metrics=[keras.metrics.RootMeanSquaredError(name='rmse')])
 
-score = model.evaluate(x_test, y_test, verbose=vb)
-print('Test MSE:', score[0])
-print('Test RMSE:', score[1])
+    history = model.fit(x_train, y_train,
+                        batch_size=batch_size,
+                        epochs=epochs,
+                        verbose=vb)
+
+    score = model.evaluate(x_train, y_train, verbose=vb)
+    print('Final Training MSE:', score[0])
+    print('Final Training RMSE:', score[1])
+
+    score = model.evaluate(x_test, y_test, verbose=vb)
+    print('Test MSE:', score[0])
+    print('Test RMSE:', score[1])
 
 print("--- %.2f seconds ---" % (time.time() - start_time))

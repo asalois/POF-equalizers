@@ -5,7 +5,6 @@ import os
 import scipy.io as spio
 import math
 import time
-os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 import numpy as np
 import tensorflow as tf
 from tensorflow import keras
@@ -27,19 +26,30 @@ tf.config.threading.set_inter_op_parallelism_threads(num_threads)
 tf.config.set_soft_device_placement(True)
 
 start_time = time.time()
-SNR = str(sys.argv[1])
+snr = int(sys.argv[1])
+samples = int(sys.argv[2])
 vb = 2
 
+fiber_length =20
 num_classes = 1
 batch_size = 32
 epochs = 10
 
-SNRs = str(SNR).zfill(2)
-print(SNRs)
 
+print('SNR = ',snr)
+print('Test run')
+print('Samples = ', samples)
+print('Fiber Length = ', fiber_length)
+
+start_dir = '/mnt/lustrefs/scratch/v16b915/pof_data/fiberLen'
+start_dir += str(fiber_length).zfill(2)
+start_dir += '/' + str(samples) + '_samples/snr'
+
+
+SNRs = str(snr).zfill(2)
 
 # Load the data
-matname = "snr" +SNRs + "/testDataSnr" + SNRs + ".mat"
+matname = start_dir + SNRs + "/testDataSnr" + SNRs + ".mat"
 print(matname)
 mat = spio.loadmat(matname, squeeze_me=False)
 x_train = mat['testTrainIn']
@@ -69,7 +79,7 @@ fmtLen = int(math.ceil(math.log(max(batch_size, y_train.shape[0]),10)))
 
 # Define the network
 model = Sequential()
-model.add(Dense(40, activation='linear', input_dim=9))
+model.add(Dense(12, activation='linear', input_dim=(2*samples+1)))
 model.add(Dense(num_classes, activation='linear'))
 
 model.summary()
@@ -92,7 +102,7 @@ print('Test MSE:', score[0])
 print('Test RMSE:', score[1])
 
 predictions = model.predict(x_test)
-matname = "predictionsSNR" + SNRs + ".mat"
+matname = str(samples) + "predictionsSNR" + SNRs + ".mat"
 spio.savemat(matname, {'pred': predictions})
 #savename = "deep_model_SNR" + SNRs + ".h5"
 #model.save(savename)

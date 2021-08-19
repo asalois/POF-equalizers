@@ -15,25 +15,30 @@ from tensorflow.keras.losses import MeanSquaredError
 
 start_time = time.time()
 SNR = str(sys.argv[1])
-cv = str(sys.argv[2])
-verboseFlag = int(sys.argv[3])
+verboseFlag = int(sys.argv[2])
 
 if verboseFlag == 1:
     vb = 1
 else:
     vb = 2
 
+samples = 2
+fiber_length = 20
 num_classes = 1
-batch_size = 128
-epochs = 2
+batch_size = 32
+epochs = 10
 
 SNRs = str(SNR).zfill(2)
 print(SNRs)
 
+start_dir = '/home/alexandersalois/Documents/pof_data/fiberLen'
+start_dir += str(fiber_length).zfill(2)
+start_dir += '/' + str(samples) + '_samples/snr'
+
 for cv in range(1,9):
 
     # Load the data
-    matname = "snr" +SNRs + "/cv0" + str(cv) + "DataSnr" + SNRs + ".mat"
+    matname = start_dir + SNRs + "/cv0" + str(cv) + "DataSnr" + SNRs + ".mat"
     print(matname)
     mat = spio.loadmat(matname, squeeze_me=False)
     x_train = mat['cvTrainIn']
@@ -65,7 +70,7 @@ for cv in range(1,9):
 
     # Define the network
     model = Sequential()
-    model.add(Dense(40, activation='linear', input_dim=9))
+    model.add(Dense(12, activation='linear', input_dim=(2*samples+1)))
     model.add(Dense(num_classes, activation='linear'))
 
     model.summary()
