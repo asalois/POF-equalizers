@@ -11,7 +11,7 @@ step = inM(3);
 refTap = ceil(taps/2);
 
 % load file
-loadName = sprintf('pam_snr_%02d_len_%04d_%04d',97,fLen*10,1);
+loadName = sprintf('pamSnr%02d/pam_snr_%02d_len_%04d_%04d',97,97,fLen*10,1);
 load(loadName)
 
 M = 4;
@@ -33,10 +33,10 @@ selectOut = outSigSNR(startOut:symbolPeriod:end);
 
 start = 5;
 runTo = 35;
-berR = zeros(iters,runTo - start);
-berRLMS = zeros(iters,runTo - start);
+berRLMS = zeros(iters,runTo - (start -1));
 x =  start:runTo;
-for i = 1:iters
+parfor i = 1:iters
+    berz = zeros(1,runTo - (start -1));
     for snr = start:runTo
         
         selectOutSNR =  awgn(selectOut,snr,'measured');
@@ -52,22 +52,18 @@ for i = 1:iters
         [lmsOut] = lineq(selectOutSNR',trainingSymbols')';
         if any(isnan(lmsOut))
             berLMS = 2;
-            ber = 2;
         else
-	    bitsIn = pamdemod(selectIn,M);
-	    bitsOut = pamdemod(selectOutSNR,M);
-	    bitsLmsOut = pamdemod(lmsOut,M);
+            bitsIn = pamdemod(selectIn,M);
+            bitsLmsOut = pamdemod(lmsOut,M);
             delay = refTap - 1;
             cut1 = bitsIn(1:end-delay);
             cut2 = bitsLmsOut(delay+1:end);
             % get BER
-            [~,ber] = biterr(bitsIn,bitsOut);
             [~,berLMS] = biterr(cut1,cut2);
         end
-        berR(i,snr - (start-1)) = ber;
-        berRLMS(i,snr - (start-1)) = berLMS;
+        berz(snr - (start-1)) = berLMS;
     end
+    berRLMS(i,:) = berz;
 end
-% berR = [mean(berR,1); mean(berRLMS,1)];
-berR = [min(berR,[],1); min(berRLMS,[],1)];
+berR = min(berRLMS,[],1);
 end

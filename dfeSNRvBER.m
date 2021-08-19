@@ -11,7 +11,7 @@ trainNum = inM(3);
 refTap = ceil(taps/2);
 
 % load file
-loadName = sprintf('pam_snr_%02d_len_%04d_%04d',97,fLen*10,1);
+loadName = sprintf('pamSnr%02d/pam_snr_%02d_len_%04d_%04d',97,97,fLen*10,1);
 load(loadName)
 
 M = 4;
@@ -30,13 +30,12 @@ outSigSNR = outSig;
 startOut = 16;
 selectIn = inSig(4:symbolPeriod:end);
 selectOut = outSigSNR(startOut:symbolPeriod:end);
-
 start = 5;
 runTo = 35;
-berR = zeros(iters,runTo - start);
-berRDfe = zeros(iters,runTo - start);
+berRDfe = zeros(iters,runTo - (start-1));
 x =  start:runTo;
-for i = 1:iters
+parfor i = 1:iters
+    berz = zeros(1,runTo - (start-1));
     for snr = start:runTo
         
         selectOutSNR =  awgn(selectOut,snr,'measured');
@@ -46,25 +45,25 @@ for i = 1:iters
         
         % eq setup
         dfe = comm.DecisionFeedbackEqualizer('Algorithm','RLS','NumForwardTaps',taps, ...
-           'NumFeedbackTaps', fTaps,'ReferenceTap',refTap,...
-           'Constellation',real(pammod(0:3,4)));
+            'NumFeedbackTaps', fTaps,'ReferenceTap',refTap,...
+            'Constellation',real(pammod(0:3,4)));
         
         % Use LMS Equalizer
         [dfeOut] = dfe(selectOutSNR',trainingSymbols')';
         if any(isnan(dfeOut))
             berDfe = 2;
-	else
-	    bitsIn = pamdemod(selectIn,M);
-	    bitsOut = pamdemod(selectOutSNR,M);
-	    bitsLmsOut = pamdemod(dfeOut,M);
+        else
+            bitsIn = pamdemod(selectIn,M);
+            bitsLmsOut = pamdemod(dfeOut,M);
             delay = refTap - 1;
             cut1 = bitsIn(1:end-delay);
             cut2 = bitsLmsOut(delay+1:end);
             % get BER
             [~,berDfe] = biterr(cut1,cut2);
         end
-        berRDfe(i,snr - (start-1)) = berDfe;
+        berz(snr - (start-1)) = berDfe;
     end
+    berRDfe(i,:) = berz;
 end
 berR = min(berRDfe,[],1);
 end
