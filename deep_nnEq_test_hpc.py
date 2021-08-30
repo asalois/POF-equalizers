@@ -79,8 +79,7 @@ fmtLen = int(math.ceil(math.log(max(batch_size, y_train.shape[0]),10)))
 
 # Define the network
 model = Sequential()
-model.add(Dense(12, activation='relu', input_dim=(2*samples+1)))
-model.add(Dense(12, activation='tanh'))
+model.add(Dense(12, activation='tanh', input_dim=(2*samples+1)))
 model.add(Dense(8, activation='tanh'))
 model.add(Dense(4, activation='tanh'))
 model.add(Dense(8, activation='tanh'))

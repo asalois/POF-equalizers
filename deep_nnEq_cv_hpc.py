@@ -82,8 +82,7 @@ for cv in range(1,9):
 
     # Definetwork
     model = Sequential()
-    model.add(Dense(12, activation='relu', input_dim=(2*samples+1)))
-    model.add(Dense(12, activation='tanh'))
+    model.add(Dense(12, activation='tanh', input_dim=(2*samples+1)))
     model.add(Dense(8, activation='tanh'))
     model.add(Dense(4, activation='tanh'))
     model.add(Dense(8, activation='tanh'))
