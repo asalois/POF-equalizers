@@ -22,8 +22,8 @@ if verboseFlag == 1:
 else:
     vb = 2
 
-samples = 3
-fiber_length = 13
+samples = 10
+fiber_length = 100
 num_classes = 1
 batch_size = 32
 epochs = 10
@@ -72,8 +72,20 @@ fmtLen = int(math.ceil(math.log(max(batch_size, y_train.shape[0]),10)))
 
 # Define the network
 model = Sequential()
-model.add(Dense(12, activation='linear', input_dim=(2*samples+1)))
+model.add(Dense(12, activation='relu', input_dim=(2*samples+1)))
+model.add(Dense(12, activation='tanh'))
+model.add(Dense(10, activation='tanh'))
+model.add(Dense(8, activation='tanh'))
+model.add(Dense(6, activation='tanh'))
+model.add(Dense(4, activation='tanh'))
+model.add(Dense(2, activation='tanh'))
+model.add(Dense(4, activation='tanh'))
+model.add(Dense(6, activation='tanh'))
+model.add(Dense(8, activation='tanh'))
+model.add(Dense(10, activation='tanh'))
+model.add(Dense(12, activation='tanh'))
 model.add(Dense(num_classes, activation='linear'))
+
 
 model.summary()
 
