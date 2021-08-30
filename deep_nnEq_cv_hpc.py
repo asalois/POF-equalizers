@@ -33,7 +33,7 @@ snr = int(sys.argv[1])
 samples = int(sys.argv[2])
 
 vb = 2
-fiber_length = 20
+fiber_length = 100
 num_classes = 1
 batch_size = 32
 epochs = 10
@@ -45,7 +45,7 @@ print('Fiber Length = ', fiber_length)
 
 start_dir = '/mnt/lustrefs/scratch/v16b915/pof_data/fiberLen'
 start_dir += str(fiber_length).zfill(2)
-start_dir += '/' + str(samples) + '_samples/snr'
+start_dir += '/' + str(samples).zfill(2) + '_samples/snr'
 
 
 SNRs = str(snr).zfill(2)
@@ -82,7 +82,12 @@ for cv in range(1,9):
 
     # Definetwork
     model = Sequential()
-    model.add(Dense(12, activation='linear', input_dim=(2*samples+1)))
+    model.add(Dense(12, activation='relu', input_dim=(2*samples+1)))
+    model.add(Dense(12, activation='tanh'))
+    model.add(Dense(8, activation='tanh'))
+    model.add(Dense(4, activation='tanh'))
+    model.add(Dense(8, activation='tanh'))
+    model.add(Dense(12, activation='tanh'))
     model.add(Dense(num_classes, activation='linear'))
 
     model.summary()
