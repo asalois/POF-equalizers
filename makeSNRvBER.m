@@ -4,32 +4,36 @@
 clear; clc; close all;
 rng(123)
 tic
-snrData = cell(1,5);
+lines = 6
+snrData = cell(1,lines);
 labels = {};
+snr = 90
 for k = 20
     fiberLength = k
-    iters = 100;
+    iters = 200;
     
-    for i = 1:6
-        tps = [ 0 2 3 2 3 5];
-        ftps = [0 0 0 1 2 3];
+    for i = 1:lines
+        tps =  [0  3  7  2  3  7];
+        ftps = [0  0  0  1  2  4];
+        trn =  [1  12 12 12 12 12];
+        trn = 2.^trn;
             if i == 1
-            snrData(1) = {noEqSNRvBER(fiberLength,1)};
+            snrData(1) = {noEqSNRvBER(fiberLength,1,snr)};
             labels(1) = cellstr('No Eq');
             
             elseif i < 4 && i > 1
                 taps = tps(i);
-                train = 2^13;
-                snrData(i) = {lmsSNRvBER([taps train 0.01],fiberLength,iters)};
+                train = trn(i);
+                snrData(i) = {lmsSNRvBER([taps train 0.01],fiberLength,iters,snr)};
                 labels(i) = cellstr(sprintf('LMS taps=%d train=%d',taps,train));
            
             else
                 taps = tps(i);
                 fTaps = ftps(i);
-                train = 2^12;
-                snrData(i) = {dfeSNRvBER([taps fTaps train],fiberLength,iters)};
+                train = trn(i);
+                snrData(i) = {dfeSNRvBER([taps fTaps train],fiberLength,iters,snr)};
                 labels(i) = cellstr(...
-                    sprintf('DFE taps=%d fTaps=%d train=%d',taps,fTaps,train));
+                    sprintf('DFE taps=%d,%d train=%d',taps,fTaps,train));
             end
             toc
     end
@@ -53,7 +57,7 @@ end
 %%
 x = 5:35;
 figure()
-y = reshape(cell2mat(snrData),31,6);
+y = reshape(cell2mat(snrData),31,lines);
 semilogy(x,y,'-*')
 xlabel('SNR [dB]')
 ylabel('BER')

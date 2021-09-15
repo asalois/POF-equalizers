@@ -1,4 +1,4 @@
-function [berR, x]=dfeSNRvBER(inM,fLen,iters)
+function [berR, x]=dfeSNRvBER(inM,fLen,iters,folder)
 % DFE EQ Graph
 % Montana State University
 % Electrical & Computer Engineering Department
@@ -11,7 +11,7 @@ trainNum = inM(3);
 refTap = ceil(taps/2);
 
 % load file
-loadName = sprintf('pamSnr%02d/pam_snr_%02d_len_%04d_%04d',97,97,fLen*10,1);
+loadName = sprintf('pamSnr%02d/pam_snr_%02d_len_%04d_%04d',folder,folder,fLen*10,1);
 load(loadName)
 
 M = 4;

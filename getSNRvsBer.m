@@ -1,4 +1,4 @@
-%% Get data from Optsim mat files
+ %% Get data from Optsim mat files
 clear; clc; close all;
 tic
 rng(123)
