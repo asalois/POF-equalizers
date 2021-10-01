@@ -1,4 +1,4 @@
-function [ber, x]=dfeSNRvBER(seq,ref,taps,fTaps,trainNum)
+function [ber]=dfeEq(seq,ref,taps,fTaps,trainingSymbols)
 % DFE EQ Graph
 % Montana State University
 % Electrical & Computer Engineering Department
@@ -7,30 +7,30 @@ refTap = ceil(taps/2);
 
 M = 4;
 
-% define number of symbols to train EQ
-trainingSymbols = seq(1:trainNum)';
-seq = seq(trainNum+1:end)';
-ref = ref(trainNum+1:end);
-
 % eq setup
 dfe = comm.DecisionFeedbackEqualizer('Algorithm','RLS','NumForwardTaps',taps, ...
     'NumFeedbackTaps', fTaps,'ReferenceTap',refTap,...
     'Constellation',real(pammod(0:3,4)));
 
 % Use LMS Equalizer
-[dfeOut] = dfe(seq,trainingSymbols)';
+[dfeOut] = dfe(seq',trainingSymbols')';
 if any(isnan(dfeOut))
     ber = 2;
 else
+    %show = 10;
+    %ref(100:100+show)
+    %seq(100:100+show)
+    %dfeOut(100:100+show)
     bitsIn = pamdemod(ref,M);
-    bitsLmsOut = pamdemod(dfeOut,M);
-    delay = refTap - 1;
-    cut1 = bitsIn(1:end-delay);
-    cut2 = bitsLmsOut(delay+1:end);
-    show = 20;
-    cut1(1:show)
-    cut2(1:show)
+    bitsOut = pamdemod(dfeOut,M);
+    %delay = 4;
+    %cut1 = bitsIn(1:end-delay);
+    %cut2 = bitsOut(delay+1:end);
+    %cut3 = bitsOut(1:end-delay);
+    %cut4 = bitsIn(delay+1:end);
     % get BER
-    [~,ber] = biterr(cut1,cut2);
+    [~,ber] = biterr(bitsIn,bitsOut);
+    %[~,ber] = biterr(cut1,cut2)
+    %[~,ber] = biterr(cut4,cut3)
 end
 end
