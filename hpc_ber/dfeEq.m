@@ -1,4 +1,4 @@
-function [ber]=dfeEq(seq,ref,taps,fTaps,trainingSymbols)
+function [ber]=dfeEq(seq,ref,taps,fTaps,step,trainingSymbols)
 % DFE EQ Graph
 % Montana State University
 % Electrical & Computer Engineering Department
@@ -8,8 +8,8 @@ refTap = ceil(taps/2);
 M = 4;
 
 % eq setup
-dfe = comm.DecisionFeedbackEqualizer('Algorithm','RLS','NumForwardTaps',taps, ...
-    'NumFeedbackTaps', fTaps,'ReferenceTap',refTap,...
+dfe = comm.DecisionFeedbackEqualizer('Algorithm','LMS','NumForwardTaps',taps, ...
+    'NumFeedbackTaps', fTaps,'ReferenceTap',refTap, 'StepSize', step,...
     'Constellation',real(pammod(0:3,4)));
 
 % Use LMS Equalizer

@@ -1,5 +1,6 @@
+clear
 train_sc = 2.^(3:19);
-tap_sc = 2:10;
+tap_sc = 2:20;
 step_sc = linspace(0.0001,0.01,20);
 for i = tap_sc
 	if i == 2
