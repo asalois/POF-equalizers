@@ -1,29 +1,29 @@
-% Montana State University
-% Electrical & Computer Engineering Department
-% Created by Alexander Salois
-function make_ber_eqs(indx)
+function scan_lms(indx)
 tic
-train_sc = 2.^(4:13);
+train_sc = 2.^(3:19);
 tap_sc = 2:10;
-step_sc =logspace(-3,-1,11);
-scan = combvec(train_sc,tap_sc,step_sc);
-trainNum = scan(1,indx) 
-taps = scan(2,indx) 
-step = scan(3,indx) 
+step_sc = linspace(0.1,0.0001,20)
+scan = combvec(tap_sc,step_sc,train_sc);
+
+
+load('data.mat','test','target','train')
+scaleFactor = 1.2;
+train = train * scaleFactor;
+test = test * scaleFactor;
+trainNum = 2^7
+taps = 2
+step = 0.001
 ber = zeros(1,31);
 for snr = 5:35
-	dir = sprintf('/mnt/lustrefs/scratch/v16b915/pof_data/fiberLen100/01_samples/snr%02d/testDataSnr%02d.mat',snr,snr)
-	load(dir)
 	start = 1000;
-	trainSymbols = testTrainIn(2,start:start+trainNum);
-	seq = testIn(2,:);
-	ref = testTarget;
-	trainSymbols = (trainSymbols- 0.5) *6;
-	seq = (seq- 0.5) *6;
-	ref = (ref- 0.5) *6;
-	ber(snr-4) = lmsEq(seq,ref,taps,trainSymbols,step)
+	trainSymbols = train(snr-4,start:start+trainNum);
+    	seq = test(snr-4,:);
+    	ref = target(snr-4,:);
+	ber(snr-4) = lmsEq(seq,ref,taps,step,trainSymbols);
 end
-saveName = sprintf('%03d_ber_eqs',indx);
-save(saveName,'ber','trainNum','step','taps')
+ber
+saveName = sprintf('%04d_ber_eqs',indx);
+save(saveName,'ber','trainNum','taps','step')
 toc
 end
+

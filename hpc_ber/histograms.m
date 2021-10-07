@@ -2,12 +2,15 @@
 % Electrical & Computer Engineering Department
 % Created by Alexander Salois
 clear; clc; close all;
+load('data.mat')
 %% 100 m POF
-load('pam_pow_18_len_1000_0001.mat')
+
+scaleFactor = 1.2;
+figure()
+histogram(scaleFactor*test(31,:))
 
 figure()
-histogram(1.2*test(31,:))
-% figure()
-% histogram(train(31,:))
-% figure()
-% histogram(target(31,:))
+histogram(scaleFactor*train(31,:))
+
+figure()
+histogram(target(31,:))

@@ -1,11 +1,13 @@
-function [berR,x]=noEqSNRvBER(fLen,iters,folder)
+% function [berR,x]=noEqSNRvBER(fLen,iters,folder)
+function [berR,x]=noEqSNRvBER(fLen,iters)
 % LMS EQ Graph
 % Montana State University
 % Electrical & Computer Engineering Department
 % Created by Alexander Salois
 
 % load file
-loadName = sprintf('pamSnr%02d/pam_snr_%02d_len_%04d_%04d',folder,folder,fLen*10,1);
+% loadName = sprintf('pamSnr%02d/pam_snr_%02d_len_%04d_%04d',folder,folder,fLen*10,1);
+loadName = sprintf('pam_pow_%02d_len_%04d_%04d',18,fLen*10,1);
 load(loadName)
 
 M = 4;

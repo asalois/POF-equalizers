@@ -1,4 +1,4 @@
-function [ber]=lmsEq(seq,ref,taps,train,step)
+function [ber]=lmsEq(seq,ref,taps,step,train)
 % LMS EQ Graph
 % Montana State University
 % Electrical & Computer Engineering Department
