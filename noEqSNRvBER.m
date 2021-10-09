@@ -25,7 +25,7 @@ outSig = outSig*6 -3;
 outSigSNR = outSig;
 startOut = 16;
 selectIn = inSig(4:symbolPeriod:end);
-selectOut = outSigSNR(startOut:symbolPeriod:end);
+selectOut = 1.2*outSigSNR(startOut:symbolPeriod:end);
 
 start = 5;
 runTo = 35;

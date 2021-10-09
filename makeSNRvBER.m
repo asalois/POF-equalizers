@@ -11,9 +11,9 @@ fiberLength = 100
 iters = 100;
 
 for i = 1:lines
-    tps =  [0  2  2  2  3  3];
-    ftps = [0  0  0  1  2  1];
-    trn =  [1  5  9 12 12 12];
+    tps =  [0  2  2  2  2  2];
+    ftps = [0  0  0  1  1  1];
+    trn =  [1  6  7  5  6  7];
     trn = 2.^trn;
     taps = tps(i);
     fTaps = ftps(i);
@@ -49,7 +49,6 @@ for i = 1:lines
     % 	save(saveName)
     % 	toc
 end
-
 %%
 x = 5:35;
 figure()
