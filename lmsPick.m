@@ -79,23 +79,6 @@ else
     cut2 = bitsLmsOut(delay+1:end);
     % get BER
     [~,ber] = biterr(cut1,cut2);
-    %     st = 2*taps;
-    %     berR = ones(100*2+1,1);
-    %     for delay = -st:st
-    %         if delay < 0
-    %             cut = abs(delay);
-    %             cut1 = bitsLmsOut(1:end-cut);
-    %             cut2 = bitsIn(cut+1:end);
-    %         else
-    %             cut1 = bitsIn(1:end-delay);
-    %             cut2 = bitsLmsOut(delay+1:end);
-    %         end
-    %         % get BER
-    %         [~,ber] = biterr(cut1,cut2);
-    %         berR(delay+st+1) = ber;
-    %     end
-    %     [ber,i] = min(berR);
-    %     delay = i - (st+1);
 end
     
 end

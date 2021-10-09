@@ -11,9 +11,9 @@ fiberLength = 100
 iters = 100;
 
 for i = 1:lines
-    tps =  [0  2  2  2  2  2];
-    ftps = [0  0  0  1  1  1];
-    trn =  [1  6  7  5  6  7];
+    tps =  [0  2  2  2  3  3];
+    ftps = [0  0  0  1  1  2];
+    trn =  [1  6  7  6  6  6];
     trn = 2.^trn;
     taps = tps(i);
     fTaps = ftps(i);
@@ -50,9 +50,10 @@ for i = 1:lines
     % 	toc
 end
 %%
+y = reshape(cell2mat(snrData),31,lines)
+su = sum(y(15:end,:),1)
 x = 5:35;
 figure()
-y = reshape(cell2mat(snrData),31,lines);
 semilogy(x,y,'-*')
 xlabel('SNR [dB]')
 ylabel('BER')
