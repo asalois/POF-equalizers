@@ -1,0 +1,48 @@
+SNR =  10
+Test run
+Samples =  3
+Fiber Length =  13
+/home/alexandersalois/Documents/pof_data/fiberLen13/3_samples/snr10/testDataSnr10.mat
+(3145584, 7) train samples
+(3145584, 1) train labels
+(1048528, 7) test samples
+(1048528, 1) test labels
+Model: "sequential"
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+dense (Dense)                (None, 12)                96        
+_________________________________________________________________
+dense_1 (Dense)              (None, 1)                 13        
+=================================================================
+Total params: 109
+Trainable params: 109
+Non-trainable params: 0
+_________________________________________________________________
+Epoch 1/10
+98300/98300 - 45s - loss: 0.0422 - rmse: 0.2053
+Epoch 2/10
+98300/98300 - 45s - loss: 0.0420 - rmse: 0.2050
+Epoch 3/10
+98300/98300 - 45s - loss: 0.0420 - rmse: 0.2050
+Epoch 4/10
+98300/98300 - 45s - loss: 0.0420 - rmse: 0.2049
+Epoch 5/10
+98300/98300 - 44s - loss: 0.0420 - rmse: 0.2049
+Epoch 6/10
+98300/98300 - 45s - loss: 0.0420 - rmse: 0.2049
+Epoch 7/10
+98300/98300 - 45s - loss: 0.0420 - rmse: 0.2049
+Epoch 8/10
+98300/98300 - 45s - loss: 0.0420 - rmse: 0.2049
+Epoch 9/10
+98300/98300 - 45s - loss: 0.0420 - rmse: 0.2049
+Epoch 10/10
+98300/98300 - 45s - loss: 0.0420 - rmse: 0.2049
+98300/98300 - 31s - loss: 0.0420 - rmse: 0.2049
+Final Training MSE: 0.04198033735156059
+Final Training RMSE: 0.20489104092121124
+32767/32767 - 10s - loss: 0.0419 - rmse: 0.2048
+Test MSE: 0.04192296043038368
+Test RMSE: 0.20475097000598907
+--- 497.04 seconds ---

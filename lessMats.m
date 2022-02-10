@@ -4,10 +4,10 @@
 clear; clc; close all;
 tic
 myCell = cell(1,2,1); % (fiberLen, [in out], runNum)
-mat_file_path = "/home/alexandersalois/Documents/pof_data/fiberLen100/";
+mat_file_path = "/home/alexandersalois/DataDrive/optsim/";
 pow = 18;
 for fl = 100
-    for  rn = 1:64
+    for  rn = 1:16
         loadName = mat_file_path;
 %         loadName = sprintf('pam_snr_%02d_len_%04d_%04d',snr,fl*10,rn);
         loadName = loadName + sprintf('pam_pow_%02d_len_%04d_%04d',pow,fl*10,rn);
@@ -26,7 +26,7 @@ for fl = 100
         myCell{fl/100,2,rn} = outSig;
         %         if snr == 97
         %             myCell{fiberLen,1,runNum} = inSig;
-        %             myCell{fiberLen,2,runNum} = outSig;
+        %             myCell{fiberLen,2,runNum} = outSig; i;  
         %         else
         %             myCell{fiberLen,1,runNum+1} = inSig;
         %             myCell{fiberLen,2,runNum+1} = outSig;

@@ -13,7 +13,7 @@ refTap = ceil(taps/2);
 
 % load file
 % loadName = sprintf('pamSnr%02d/pam_snr_%02d_len_%04d_%04d',folder,folder,fLen*10,1);
-loadName = sprintf('pam_pow_%02d_len_%04d_%04d',18,fLen*10,1);
+loadName = sprintf('pam_pow_%02d_len_%04d_%04d',19,fLen*10,1);
 load(loadName)
 
 M = 4;
@@ -57,9 +57,8 @@ parfor i = 1:iters
         else
             bitsIn = pamdemod(selectIn,M);
             bitsLmsOut = pamdemod(dfeOut,M);
-            delay = refTap - 1;
-            cut1 = bitsIn(1:end-delay);
-            cut2 = bitsLmsOut(delay+1:end);
+            cut1 = bitsIn(25:end);
+            cut2 = bitsLmsOut(25:end);
             % get BER
             [~,berDfe] = biterr(cut1,cut2);
         end
