@@ -3,7 +3,7 @@ function mat = makeClassMat(input,numSamples)
 %   Detailed explanation goes here
 
 mat = zeros(4,length(input));
-for i = 1:length(input)
+for i  = 1 + (numSamples - 1):length(input) - numSamples
     if input(i) < 1/6
         mat(:,i) = [0;0;0;1];
     elseif input(i) > 5/6

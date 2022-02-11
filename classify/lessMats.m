@@ -4,13 +4,14 @@
 clear; clc; close all;
 tic
 myCell = cell(1,2,1); % (fiberLen, [in out], runNum)
-mat_file_path = "/home/alexandersalois/DataDrive/optSimData/";
+%matFilePath = "/home/alexandersalois/DataDrive/optSimData/";
+loadFilePath = "D:/OneDrive - Montana State University/optSimData/100Mbps/100m/19/";
+saveFilePath = "D:/OneDrive - Montana State University/";
 pow = 19;
-numSigs = 16;
+numSigs = 8;
 for fl = 100
     for  rn = 1:numSigs
-        loadName = mat_file_path;
-        loadName = loadName + sprintf('pam_pow_%02d_len_%04d_%04d',pow,fl*10,rn);
+        loadName = loadFilePath + sprintf('pam_pow_%02d_len_%04d_%04d',pow,fl*10,rn);
         try
             load(loadName)
         catch
@@ -36,12 +37,12 @@ tic
 M = 4;
 % symbolPeriod = log2(M)*2^pointsPerBit; % in samples
 symbolPeriod = 16;
-startSNR = 5;
+startSNR = 3;
 endSNR = 35;
 fl = 1;
-samples = 5
+samples = 3
 trainData = cell(3,c,endSNR - (startSNR - 1));
-saveFilePath = mat_file_path + sprintf('%02d_samples/',samples)
+saveFilePath = saveFilePath + sprintf("%02d_samples/%02d_signals/",samples,numSigs)
 for snr = startSNR:endSNR
     for i = 1:c
         outSig = myCell{fl,2,i};
@@ -84,17 +85,17 @@ for snr = startSNR:endSNR
     saveName = saveFilePath + sprintf('testDataSnr%02d',snr)
     save(saveName,'testTarget','testIn','testTrainTarget','testTrainIn','testSeq');
     
-    cv={};
-    cvFold = 4;
-    for i = 1:cvFold
-        cv = trainData(1:2,z(i,:),snr-(startSNR -1));
-        cvTestTarget = cell2mat(cv(1,:));
-        cvTestIn = cell2mat(cv(2,:));
-        cv = trainData(:,z(setdiff(1:cvFold,i),:),snr-(startSNR -1));
-        cvTrainTarget = cell2mat(cv(1,:));
-        cvTrainIn = cell2mat(cv(2,:));
-        saveName = saveFilePath + sprintf('cv%02dDataSnr%02d',i,snr)
-        save(saveName,'cvTestTarget','cvTestIn','cvTrainTarget','cvTrainIn');
-    end
+%     cv={};
+%     cvFold = 4;
+%     for i = 1:cvFold
+%         cv = trainData(1:2,z(i,:),snr-(startSNR -1));
+%         cvTestTarget = cell2mat(cv(1,:));
+%         cvTestIn = cell2mat(cv(2,:));
+%         cv = trainData(:,z(setdiff(1:cvFold,i),:),snr-(startSNR -1));
+%         cvTrainTarget = cell2mat(cv(1,:));
+%         cvTrainIn = cell2mat(cv(2,:));
+%         saveName = saveFilePath + sprintf('cv%02dDataSnr%02d',i,snr)
+%         save(saveName,'cvTestTarget','cvTestIn','cvTrainTarget','cvTrainIn');
+%     end
 end
 toc
