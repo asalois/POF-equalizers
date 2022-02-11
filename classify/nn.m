@@ -4,24 +4,25 @@
 
 % a file to get started with classicfaction 
 clear; clc; close all;
-graph = zeros(7,2);
+graph = zeros(31,2);
 neurons = 100;
 samples = 3;
-name = 'softmax';
-for snr = 5:5:35
-	dirName = "/home/alexandersalois/DataDrive/optSimData/05_samples/";
+name = 'tansig';
+for snr = 5:35
+	%dirName = "/home/alexandersalois/DataDrive/optSimData/05_samples/";
+    dirName = "D:/OneDrive - Montana State University/03_samples/08_signals/";
 	%matName = sprintf('cv%02dDataSnr%02d',1,snr); % cv
-	matName = sprintf('testDataSnr%02d',snr); % test
+	matName = sprintf('testDataSnr%02d',snr) % test
 	loadName = dirName + matName;
 	load(loadName)
 
 	%%
-	net = patternnet(neurons,'trainscg')
+	net = patternnet(neurons,'trainscg');
 	net.layers{1}.transferFcn = name;
-	net.trainParam.showWindow = false;
-	net.trainParam.showCommandLine = true;
-	%net = train(net,testTrainIn,testTrainTarget,'useGPU','yes') % use GPU
-	net = train(net,testTrainIn,testTrainTarget,'useParallel','yes')
+	net.trainParam.showWindow = true;
+	net.trainParam.showCommandLine = false;
+	net = train(net,testTrainIn,testTrainTarget,'useGPU','yes'); % use GPU
+	%net = train(net,testTrainIn,testTrainTarget,'useParallel','yes');
 	y = net(testIn);
 	perf = perform(net,testTarget,y)
 
@@ -45,22 +46,12 @@ for snr = 5:5:35
 	y_a = pamdemod(seq',4);
 	y_b = pamdemod(pred',4);
 
-	%num = 20;
-	%
-	%testSeq(1:num)
-	%pred(1:num)
-	%
-	%testSeq(end-num:end)
-	%pred(end-num:end)
-	%
-	%x_b(end-num:end)'
-	%y_b(end-num:end)'
 
 	%%
 	snr
 	[~, ber] = biterr(x,y_a)
 	[~, ber_ann] = biterr(x,y_b)
-	graph(snr/5,:) = [ber ber_ann];
+	graph(snr-4,:) = [ber ber_ann];
 end
 graph'
 saveName = "ber_" + name;
