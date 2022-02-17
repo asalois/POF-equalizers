@@ -4,14 +4,15 @@
 
 % a file to get started with classicfaction 
 clear; clc; close all;
+tic
 graph = zeros(31,2);
 neurons = 100;
 samples = 3;
-name = 'tansig';
+name = 'logsig';
 for snr = 5:35
 	%dirName = "/home/alexandersalois/DataDrive/optSimData/05_samples/";
-    dirName = "D:/OneDrive - Montana State University/03_samples/08_signals/";
-	%matName = sprintf('cv%02dDataSnr%02d',1,snr); % cv
+    %dirName = "D:/OneDrive - Montana State University/03_samples/08_signals/";
+    dirName = "D:/OneDrive - Montana State University/07_samples/08_signals/";
 	matName = sprintf('testDataSnr%02d',snr) % test
 	loadName = dirName + matName;
 	load(loadName)
@@ -21,8 +22,10 @@ for snr = 5:35
 	net.layers{1}.transferFcn = name;
 	net.trainParam.showWindow = true;
 	net.trainParam.showCommandLine = false;
+    net.trainParam.min_grad = 10^(-7);
+    net.trainParam.max_fail = 10;
 	net = train(net,testTrainIn,testTrainTarget,'useGPU','yes'); % use GPU
-	%net = train(net,testTrainIn,testTrainTarget,'useParallel','yes');
+% 	net = train(net,testTrainIn,testTrainTarget,'useParallel','yes');
 	y = net(testIn);
 	perf = perform(net,testTarget,y)
 
@@ -58,3 +61,4 @@ saveName = "ber_" + name;
 sizeName = sprintf('_%d_%d',neurons,samples); % test
 saveName = saveName + sizeName
 save(saveName,'graph')
+toc
