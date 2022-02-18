@@ -22,9 +22,9 @@ if verboseFlag == 1:
 else:
     vb = 2
 
-samples = 10
+samples = 3
 fiber_length = 100
-num_classes = 1
+num_classes = 4
 batch_size = 32
 epochs = 10
 
@@ -43,22 +43,28 @@ start_dir += '/' + str(samples) + '_samples/snr'
 matname = start_dir + SNRs + '/testDataSnr' + SNRs + '.mat'
 print(matname)
 mat = spio.loadmat(matname, squeeze_me=False)
-x_train = mat['testTrainIn']
-y_train = mat['testTrainTarget']
+x_train = mat['trainIn']
+y_train = mat['trainTarget']
 x_test = mat['testIn']
 y_test = mat['testTarget']
+x_val = mat['valIn']
+y_val = mat['valTarget']
 
-x_train = np.transpose(x_train)
-y_train = np.transpose(y_train)
-x_test = np.transpose(x_test)
-y_test = np.transpose(y_test)
-
-
-# Convert the data to floats between 0 and 1.
+# Convert the data to floats between 0 and 1 and transpose matrix
 x_train = x_train.astype('float32')
 y_train = y_train.astype('float32')
 x_test = x_test.astype('float32')
 y_test = y_test.astype('float32')
+x_val = x_val.astype('float32')
+y_val = y_val.astype('float32')
+x_train = np.transpose(x_train)
+y_train = np.transpose(y_train)
+x_test = np.transpose(x_test)
+y_test = np.transpose(y_test)
+x_val = np.transpose(x_val)
+y_val = np.transpose(y_val)
+
+
 print(x_train.shape, 'train samples')
 print(y_train.shape, 'train labels')
 print(x_test.shape, 'test samples')
@@ -72,17 +78,18 @@ fmtLen = int(math.ceil(math.log(max(batch_size, y_train.shape[0]),10)))
 
 # Define the network
 model = Sequential()
-model.add(Dense(500, activation='tanh', input_dim=(2*samples+1)))
-model.add(Dense(num_classes, activation='linear'))
+model.add(Dense(100, activation='sigmoid', input_dim=(samples)))
+model.add(Dense(num_classes, activation='sigmoid'))
 
 
 model.summary()
 
-model.compile(loss=keras.metrics.mean_squared_error,
+model.compile(loss=keras.losses.CagtegoricalCrossentropy,
               optimizer=SGD(),
               metrics=[keras.metrics.RootMeanSquaredError(name='rmse')])
 
 history = model.fit(x_train, y_train,
+                    validation_data = (x_val, y_val)
                     batch_size=batch_size,
                     shuffle=True,
                     epochs=epochs,
@@ -99,7 +106,7 @@ print('Test RMSE:', score[1])
 predictions = model.predict(x_test)
 matname = "predictionsSNR" + SNRs + ".mat"
 spio.savemat(matname, {'pred': predictions})
-#savename = "deep_model_SNR" + SNRs + ".h5"
-#model.save(savename)
+savename = "deep_model_SNR" + SNRs + ".h5"
+model.save(savename)
 
 print("--- %.2f seconds ---" % (time.time() - start_time))
