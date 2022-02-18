@@ -7,12 +7,12 @@ clear; clc; close all;
 tic
 graph = zeros(31,2);
 neurons = 100;
-samples = 3;
+samples = 1;
 name = 'logsig';
-for snr = 5:35
+for snr = 5:40
 	%dirName = "/home/alexandersalois/DataDrive/optSimData/05_samples/";
     %dirName = "D:/OneDrive - Montana State University/03_samples/08_signals/";
-    dirName = "D:/OneDrive - Montana State University/07_samples/08_signals/";
+    dirName = "D:/OneDrive - Montana State University/TF_data/01_samples/08_signals/";
 	matName = sprintf('testDataSnr%02d',snr) % test
 	loadName = dirName + matName;
 	load(loadName)
@@ -22,9 +22,9 @@ for snr = 5:35
 	net.layers{1}.transferFcn = name;
 	net.trainParam.showWindow = true;
 	net.trainParam.showCommandLine = false;
-    net.trainParam.min_grad = 10^(-7);
-    net.trainParam.max_fail = 10;
-	net = train(net,testTrainIn,testTrainTarget,'useGPU','yes'); % use GPU
+%     net.trainParam.min_grad = 10^(-7);
+%     net.trainParam.max_fail = 10;
+	net = train(net,trainIn,trainTarget,'useGPU','yes'); % use GPU
 % 	net = train(net,testTrainIn,testTrainTarget,'useParallel','yes');
 	y = net(testIn);
 	perf = perform(net,testTarget,y)

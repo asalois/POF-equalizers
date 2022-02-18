@@ -6,7 +6,7 @@ tic
 myCell = cell(1,2,1); % (fiberLen, [in out], runNum)
 %matFilePath = "/home/alexandersalois/DataDrive/optSimData/";
 loadFilePath = "D:/OneDrive - Montana State University/optSimData/100Mbps/100m/19/";
-savePath = "D:/OneDrive - Montana State University/";
+savePath = "D:/OneDrive - Montana State University/TF_data/";
 pow = 19;
 % numSigs = 8;
 for numSigs = [8,16,32,64]
@@ -35,8 +35,8 @@ for numSigs = [8,16,32,64]
     M = 4;
     % symbolPeriod = log2(M)*2^pointsPerBit; % in samples
     symbolPeriod = 16;
-    startSNR = 3;
-    endSNR = 35;
+    startSNR = 5;
+    endSNR = 40;
     fl = 1;
     samples = 7
     trainData = cell(3,c,endSNR - (startSNR - 1));
@@ -65,9 +65,9 @@ for numSigs = [8,16,32,64]
     for snr = startSNR:endSNR
         % randomly select signals
         idx = randperm(numSigs);
-        test = idx(1:numSigs/2)
-        train = idx(numSigs/2+1:end);
-        z = reshape(train,4,(numSigs/8))
+        train = idx(1:numSigs*(6/8))
+        test = idx(numSigs*(6/8)+1:numSigs*(7/8))
+        val = idx(numSigs*(7/8)+1:end)
 
         % pick which signals go where
         testMat = trainData(1:2,test,snr-(startSNR -1));
@@ -75,13 +75,17 @@ for numSigs = [8,16,32,64]
         testIn = cell2mat(testMat(2,:));
         testSeq = cell2mat(trainData(3,test,snr-(startSNR -1)));
 
-        testMat = trainData(:,train,snr-(startSNR -1));
-        testTrainTarget = cell2mat(testMat(1,:));
-        testTrainIn = cell2mat(testMat(2,:));
+        testMat = trainData(1:2,train,snr-(startSNR -1));
+        trainTarget = cell2mat(testMat(1,:));
+        trainIn = cell2mat(testMat(2,:));
+
+        testMat = trainData(1:2,val,snr-(startSNR -1));
+        valTarget = cell2mat(testMat(1,:));
+        valIn = cell2mat(testMat(2,:));
 
         % save the data
         saveName = saveFilePath + sprintf('testDataSnr%02d',snr)
-        save(saveName,'testTarget','testIn','testTrainTarget','testTrainIn','testSeq');
+        save(saveName,'testTarget','testIn','trainTarget','trainIn','testSeq','valTarget','valIn');
 
         %     cv={};
         %     cvFold = 4;
