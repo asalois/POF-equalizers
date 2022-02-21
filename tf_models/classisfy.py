@@ -21,7 +21,7 @@ else:
     vb = 2
 
 samples = 3
-signals = 64
+signals = 16
 fiber_length = 100
 num_classes = 4
 batch_size = 32
@@ -108,7 +108,7 @@ print('Test acc:', score[1])
 predictions = model.predict(x_test)
 matname = "predictionsSNR" + SNRs + ".mat"
 spio.savemat(matname, {'pred': predictions})
-savename = "deep_model_SNR" + SNRs + ".h5"
+savename = "class_model_SNR" + SNRs 
 model.save(savename)
 
 print("--- %.2f seconds ---" % (time.time() - start_time))
