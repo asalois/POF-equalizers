@@ -10,8 +10,6 @@ import numpy as np
 from tensorflow import keras
 from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import Dense, Dropout
-from tensorflow.keras.optimizers import SGD
-from tensorflow.keras.losses import MeanSquaredError
 
 start_time = time.time()
 snr = str(sys.argv[1])
@@ -27,10 +25,10 @@ signals = 64
 fiber_length = 100
 num_classes = 4
 batch_size = 32
-epochs = 10
+epochs = 20
 
 print('SNR = ',snr)
-print('Test run')
+print('Signals = ',signals)
 print('Samples = ', samples)
 print('Fiber Length = ', fiber_length)
 
@@ -71,12 +69,11 @@ print(x_train.shape, 'train samples')
 print(y_train.shape, 'train labels')
 print(x_test.shape, 'test samples')
 print(y_test.shape, 'test labels')
-#print('Label Examples:\n', x_train[0:9]);
-#print('Label Examples:\n', y_train[0:9]);
 
 
 # Formatting
 fmtLen = int(math.ceil(math.log(max(batch_size, y_train.shape[0]),10)))
+
 
 # Define the network
 model = Sequential()
@@ -87,23 +84,26 @@ model.add(Dense(num_classes, activation='sigmoid'))
 model.summary()
 
 model.compile(loss=keras.losses.CategoricalCrossentropy(),
-              optimizer=SGD(),
+              optimizer=keras.optimizers.Adam(),
               metrics=['accuracy'])
+
+es = keras.callbacks.EarlyStopping(monitor='val_accuracy', mode='max', verbose=1)
 
 history = model.fit(x_train, y_train,
                     validation_data = (x_val, y_val),
                     batch_size=batch_size,
                     shuffle=True,
                     epochs=epochs,
-                    verbose=vb)
+                    verbose=vb,
+                    callbacks=[es])
 
 score = model.evaluate(x_train, y_train, verbose=vb)
-print('Final Training:', score)
-#print('Final Training RMSE:', score[1])
+print('Final Training loss:', score[0])
+print('Final Training acc:', score[1])
 
 score = model.evaluate(x_test, y_test, verbose=vb)
-print('Test:', score)
-#print('Test RMSE:', score[1])
+print('Test loss:', score[0])
+print('Test acc:', score[1])
 
 predictions = model.predict(x_test)
 matname = "predictionsSNR" + SNRs + ".mat"
