@@ -26,14 +26,15 @@ for i = 1:31
 	load(rname);
 	pred = pred';
         predSeq = zeros(1,length(pred));
-        for z = 1:length(pred)
-            if pred(1,z) > 0.9
+ 	[~,maxIndx] = max(pred,[],1);
+        for z = 1:length(maxIndx)
+            if maxIndx(z) == 1
                 predSeq(z)=3;
-            elseif pred(2,z) > 0.9
+            elseif maxIndx(z) == 2
                 predSeq(z)=1;
-            elseif pred(3,z) > 0.9
+            elseif maxIndx(z) == 3
                 predSeq(z)=-1;
-            elseif pred(4,z) > 0.9
+            elseif maxIndx(z) == 4
                 predSeq(z)=-3;
             end
         end
