@@ -23,11 +23,11 @@ else:
     vb = 2
 
 samples = 3
-signals = 16
+signals = 64
 fiber_length = 100
 num_classes = 4
 batch_size = 32
-epochs = 20
+epochs = 10
 
 print('SNR = ',snr)
 print('Test run')
@@ -87,8 +87,8 @@ model.add(Dense(num_classes, activation='sigmoid'))
 model.summary()
 
 model.compile(loss=keras.losses.CategoricalCrossentropy(),
-              optimizer=SGD())
-              #metrics=[keras.metrics.RootMeanSquaredError(name='rmse')])
+              optimizer=SGD(),
+              metrics=['accuracy'])
 
 history = model.fit(x_train, y_train,
                     validation_data = (x_val, y_val),
