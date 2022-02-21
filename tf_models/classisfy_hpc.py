@@ -88,7 +88,7 @@ model.compile(loss=keras.losses.CategoricalCrossentropy(),
               optimizer=keras.optimizers.Adam(),
               metrics=['accuracy'])
 
-es = keras.callbacks.EarlyStopping(monitor='val_accuracy', mode='max', verbose=1)
+es = keras.callbacks.EarlyStopping(monitor='val_accuracy', mode='max', verbose=vb)
 
 history = model.fit(x_train, y_train,
                     validation_data = (x_val, y_val),
