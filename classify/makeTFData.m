@@ -6,19 +6,19 @@ tic
 myCell = cell(2,1); % (fiberLen, [in out], runNum)
 %loadFilePath = "D:/OneDrive - Montana State University/optSimData/100Mbps/100m/19/";
 %savePath = "D:/OneDrive - Montana State University/TF_data/";
-loadFilePath = "H:/OneDrive - Montana State University/optSimData/100Mbps/100m/19/";
-savePath = "C:/TF_data/";
-%loadFilePath = "/home/alexandersalois/DataDrive/optSimData/";
-%savePath = "/home/alexandersalois/DataDrive/TF_data/";
+%loadFilePath = "H:/OneDrive - Montana State University/optSimData/100Mbps/100m/19/";
+%savePath = "C:/TF_data/";
+loadFilePath = "/home/alexandersalois/DataDrive/optSimData/";
+savePath = "/home/alexandersalois/DataDrive/TF_data/";
 pow = 19;
 fl = 100
-numSigs = 64
+numSigs = 32
 for  rn = 1:numSigs
     loadName = loadFilePath + sprintf('pam_pow_%02d_len_%04d_%04d',pow,fl*10,rn);
     try
-        load(loadName)
+	load(loadName)
     catch
-        break
+	break
     end
 
     % rescale
@@ -29,7 +29,7 @@ for  rn = 1:numSigs
     myCell{1,rn} = inSig;
     myCell{2,rn} = outSig;
 end
-clearvars -except myCell numSigs savePath
+clearvars -except myCell numSigs savePath loadFilePath
 toc
 %%
 [b, c] = size(myCell)
@@ -43,16 +43,16 @@ saveFilePath = savePath + sprintf("%02d_symbols/%02d_signals/",1,numSigs)
 for snr = startSNR:endSNR
 
     for i = 1:c
-        outSig = myCell{2,i};
-        inSig = myCell{1,i};
-        outSigSNR = awgn(outSig,snr,'measured');
-        selectIn = inSig(4:symbolPeriod:end);
+	outSig = myCell{2,i};
+	inSig = myCell{1,i};
+	outSigSNR = awgn(outSig,snr,'measured');
+	selectIn = inSig(4:symbolPeriod:end);
 
-        m = makeSymbolMat(outSigSNR,1);
-        t = makeClassMat(selectIn,samples);
-        trainData{3,i} = selectIn(1:end -(samples-1));
-        trainData{2,i} = m;
-        trainData{1,i} = t;
+	m = makeSymbolMat(outSigSNR,1);
+	t = makeClassMat(selectIn,samples);
+	trainData{3,i} = selectIn(1:end -(samples-1));
+	trainData{2,i} = m;
+	trainData{1,i} = t;
     end
     toc
 
