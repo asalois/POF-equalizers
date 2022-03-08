@@ -13,8 +13,11 @@ refTap = ceil(taps/2);
 
 % load file
 % loadName = sprintf('pamSnr%02d/pam_snr_%02d_len_%04d_%04d',folder,folder,fLen*10,1);
-loadName = sprintf('pam_pow_%02d_len_%04d_%04d',20,fLen*10,1);
+loadName = sprintf('~/DataDrive/optSimData/pam_pow_%02d_len_%04d_%04d',20,fLen*10,1);
 load(loadName)
+
+load('filterB')
+b=b;
 
 M = 4;
 symbolPeriod = log2(M)*2^pointsPerBit; % in samples
@@ -28,10 +31,10 @@ outSig = outSig/max(outSig);
 outSig = outSig*6 -3;
 
 % outSigSNR = awgn(outSig,SNR,'measured');
-outSigSNR = outSig;
+% outSigSNR = outSig;
 startOut = 16;
 selectIn = inSig(4:symbolPeriod:end);
-selectOut = 1.2*outSigSNR(startOut:symbolPeriod:end);
+
 
 start = 5;
 runTo = 35;
@@ -40,18 +43,19 @@ x =  start:runTo;
 parfor i = 1:iters
     berz = zeros(1,runTo - (start -1));
     for snr = start:runTo
-        
-        selectOutSNR =  awgn(selectOut,snr,'measured');
+        outSigSNR = awgn(outSig, snr, 'measured');
+        outSigSNR = filter(b, 1, outSigSNR);
+        selectOut = 1.2*outSigSNR(startOut:symbolPeriod:end);
         % define number of symbols to train EQ
         numTrainSymbols = trainNum;
-        trainingSymbols = selectOutSNR(1:numTrainSymbols);
+        trainingSymbols = selectOut(1:numTrainSymbols);
         
         % eq setup
         lineq = comm.LinearEqualizer('Algorithm','LMS', 'NumTaps',taps,'ReferenceTap',refTap,...
             'InputSamplesPerSymbol',1,'Constellation',real(pammod(0:3,4)),'StepSize',step);
         
         % Use LMS Equalizer
-        [lmsOut] = lineq(selectOutSNR',trainingSymbols')';
+        [lmsOut] = lineq(selectOut',trainingSymbols')';
         if any(isnan(lmsOut))
             berLMS = 2;
         else

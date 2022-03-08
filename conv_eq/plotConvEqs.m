@@ -12,10 +12,10 @@ fiberLength = 100;
 iters = 10;
 %% run sim
 lms = lmsSNRvBER([2 2^12 0.001],fiberLength,iters)
-dfe = dfeSNRvBER([2 1 2^12],fiberLength,iters)
+% dfe = dfeSNRvBER([2 1 2^12],fiberLength,iters)
 
 %% plot
-ber = [lms; dfe];
+ber = [lms];
 semilogy(5:35,ber')
 save('conv_100_ber', 'ber')
 toc
