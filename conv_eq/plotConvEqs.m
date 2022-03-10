@@ -6,16 +6,20 @@
 clear; clc; close all;
 tic
 
-ffe = zeros(31,1);
+ffe = zeros(31,4);
 dfe = zeros(31,1);
 fiberLength = 100;
-iters = 10;
+iters = 1;
+step = 0.00015;
 %% run sim
-lms = lmsSNRvBER([2 2^12 0.001],fiberLength,iters)
+for tap = 2:5
+    ffe(:,tap-1) = lmsSNRvBER([tap 2^12 step],fiberLength,iters);
+end
 % dfe = dfeSNRvBER([2 1 2^12],fiberLength,iters)
 
 %% plot
-ber = [lms];
+ber = [ffe];
 semilogy(5:35,ber')
-save('conv_100_ber', 'ber')
+% legend("2","4","5")
+% save('conv_100_ber', 'ber')
 toc

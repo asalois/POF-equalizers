@@ -13,7 +13,8 @@ refTap = ceil(taps/2);
 
 % load file
 % loadName = sprintf('pamSnr%02d/pam_snr_%02d_len_%04d_%04d',folder,folder,fLen*10,1);
-loadName = sprintf('~/DataDrive/optSimData/pam_pow_%02d_len_%04d_%04d',20,fLen*10,1);
+% loadName = sprintf('~/DataDrive/optSimData/pam_pow_%02d_len_%04d_%04d',20,fLen*10,1);
+loadName = sprintf('pam_pow_%02d_len_%04d_%04d',20,fLen*10,1);
 load(loadName)
 
 load('filterB')
@@ -33,6 +34,7 @@ outSig = outSig*6 -3;
 % outSigSNR = awgn(outSig,SNR,'measured');
 % outSigSNR = outSig;
 startOut = 16;
+delay = 14;
 selectIn = inSig(4:symbolPeriod:end);
 
 
@@ -40,12 +42,14 @@ start = 5;
 runTo = 35;
 berRLMS = zeros(iters,runTo - (start -1));
 x =  start:runTo;
-parfor i = 1:iters
+for i = 1:iters
     berz = zeros(1,runTo - (start -1));
     for snr = start:runTo
         outSigSNR = awgn(outSig, snr, 'measured');
-        outSigSNR = filter(b, 1, outSigSNR);
-        selectOut = 1.2*outSigSNR(startOut:symbolPeriod:end);
+        filtered = filter(b, 1, outSigSNR);
+        filtered = 1.2*filtered;
+        filtered = filtered(delay:end);
+        selectOut = filtered(startOut:symbolPeriod:end);
         % define number of symbols to train EQ
         numTrainSymbols = trainNum;
         trainingSymbols = selectOut(1:numTrainSymbols);
@@ -59,12 +63,10 @@ parfor i = 1:iters
         if any(isnan(lmsOut))
             berLMS = 2;
         else
-            bitsIn = pamdemod(selectIn,M);
+            bitsIn = pamdemod(selectIn(1:end-1),M);
             bitsLmsOut = pamdemod(lmsOut,M);
-            cut1 = bitsIn(25:end);
-            cut2 = bitsLmsOut(25:end);
             % get BER
-            [~,berLMS] = biterr(cut1,cut2);
+            [~,berLMS] = biterr(bitsIn,bitsLmsOut);
         end
         berz(snr - (start-1)) = berLMS;
     end
