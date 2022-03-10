@@ -12,13 +12,13 @@ loadFilePath = "/home/alexandersalois/DataDrive/optSimData/";
 savePath = "/home/alexandersalois/DataDrive/TF_data/";
 pow = 19;
 fl = 100
-numSigs = 32
+numSigs = 64
 for  rn = 1:numSigs
     loadName = loadFilePath + sprintf('pam_pow_%02d_len_%04d_%04d',pow,fl*10,rn);
     try
-	load(loadName)
+        load(loadName)
     catch
-	break
+        break
     end
 
     % rescale
@@ -37,10 +37,12 @@ M = 4;
 symbolPeriod = 16;
 startSNR = 5;
 endSNR = 35;
-samples = 1
+samplesPerSym = 2; 
+symbols = 1; 
 trainData = cell(3,c);
-saveFilePath = savePath + sprintf("%02d_symbols/%02d_signals/",1,numSigs)
+saveFilePath = savePath + sprintf("%02d_symbols/%02d_signals/%02d_samples/",1,numSigs,samplesPerSym)
 for snr = startSNR:endSNR
+% snr =5
 
     for i = 1:c
 	outSig = myCell{2,i};
@@ -48,9 +50,9 @@ for snr = startSNR:endSNR
 	outSigSNR = awgn(outSig,snr,'measured');
 	selectIn = inSig(4:symbolPeriod:end);
 
-	m = makeSymbolMat(outSigSNR,1);
-	t = makeClassMat(selectIn,samples);
-	trainData{3,i} = selectIn(1:end -(samples-1));
+	m = makeSymbolMat(outSigSNR,symbols,samplesPerSym);
+	t = makeClassMat(selectIn,symbols);
+	trainData{3,i} = selectIn(1:end -(symbols-1));
 	trainData{2,i} = m;
 	trainData{1,i} = t;
     end
