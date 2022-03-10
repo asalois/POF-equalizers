@@ -20,15 +20,17 @@ if verboseFlag == 1:
 else:
     vb = 2
 
-samples = 3
-signals = 16
+symbols = 1
+signals = 64
+samples = 2
 fiber_length = 100
 num_classes = 4
-batch_size = 32
+batch_size = 128
 epochs = 20
 
 print('SNR = ',snr)
-print('Signals = ',signals)
+print('Symbols = ',symbols)
+print('Signals = ', signals)
 print('Samples = ', samples)
 print('Fiber Length = ', fiber_length)
 
@@ -36,8 +38,9 @@ SNRs = str(snr).zfill(2)
 
 start_dir = '/home/alexandersalois/DataDrive/TF_data/'
 #start_dir += str(fiber_length).zfill(2)
-start_dir += str(samples).zfill(2) + '_samples/'
+start_dir += str(symbols).zfill(2) + '_symbols/'
 start_dir += str(signals).zfill(2) + '_signals/'
+start_dir += str(samples).zfill(2) + '_samples/'
 
 # Load the data
 matname = start_dir + 'testDataSnr' + SNRs + '.mat'
@@ -69,25 +72,22 @@ print(x_train.shape, 'train samples')
 print(y_train.shape, 'train labels')
 print(x_test.shape, 'test samples')
 print(y_test.shape, 'test labels')
-
-
-# Formatting
-fmtLen = int(math.ceil(math.log(max(batch_size, y_train.shape[0]),10)))
-
+print(x_val.shape, 'val samples')
+print(y_val.shape, 'val labels')
 
 # Define the network
 model = Sequential()
-model.add(Dense(100, activation='sigmoid', input_dim=(samples)))
-model.add(Dense(num_classes, activation='sigmoid'))
+model.add(Dense(100, activation='sigmoid', input_dim=(x_train.shape[1])))
+model.add(Dense(y_train.shape[1], activation='softmax'))
 
 
 model.summary()
 
 model.compile(loss=keras.losses.CategoricalCrossentropy(),
-              optimizer=keras.optimizers.Adam(),
+              optimizer=keras.optimizers.SGD(lr= 0.01, momentum= 0.9),
               metrics=['accuracy'])
 
-es = keras.callbacks.EarlyStopping(monitor='val_accuracy', mode='max', verbose=1)
+es = keras.callbacks.EarlyStopping(monitor='val_accuracy', mode='auto', verbose=1)
 
 history = model.fit(x_train, y_train,
                     validation_data = (x_val, y_val),
@@ -107,7 +107,7 @@ print('Test acc:', score[1])
 
 predictions = model.predict(x_test)
 matname = "predictionsSNR" + SNRs + ".mat"
-spio.savemat(matname, {'pred': predictions})
+spio.savemat(matname, {'pred': predictions,'testTarget': y_test})
 savename = "class_model_SNR" + SNRs 
 model.save(savename)
 
