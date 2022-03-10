@@ -16,17 +16,10 @@ name = cellstr(sprintf('%d Samples',samples))
 labels(samples) = name;
 for i = 1:31
 	snr = i + 4;
-	lname = sprintf(...
-	    '/home/alexandersalois/DataDrive/TF_data/%02d_samples/%02d_signals/testDataSnr%02d.mat'...
-	    ,samples,signals,snr);
-	load(lname)
-	rname = sprintf(...
-	    'predictionsSNR%02d.mat'...
-	    ,snr);
+	rname = sprintf('predictionsSNR%02d.mat',snr);
 	load(rname);
-	pred = pred';
-        predSeq = zeros(1,length(pred));
- 	[~,maxIndx] = max(pred,[],1);
+        predSeq = zeros(1,length(pred'));
+ 	[~,maxIndx] = max(pred',[],1);
         for z = 1:length(maxIndx)
             if maxIndx(z) == 1
                 predSeq(z)=3;
@@ -38,7 +31,19 @@ for i = 1:31
                 predSeq(z)=-3;
             end
         end
-	testSeq = (testSeq - 0.5 ) * 6;
+        targetSeq = zeros(1,length(testTarget'));
+ 	[~,maxIndx] = max(testTarget',[],1);
+        for z = 1:length(maxIndx)
+            if maxIndx(z) == 1
+                testSeq(z)=3;
+            elseif maxIndx(z) == 2
+                testSeq(z)=1;
+            elseif maxIndx(z) == 3
+                testSeq(z)=-1;
+            elseif maxIndx(z) == 4
+                testSeq(z)=-3;
+            end
+        end
 	x_b = pamdemod(testSeq,4);
 	y_b = pamdemod(predSeq,4);
 	[~, ber_dnn] = biterr(x_b,y_b)
@@ -46,13 +51,13 @@ for i = 1:31
 end
 toc
 %%
-snr = 5:35;
-figure()
-semilogy(snr,ber,'-*')
-title('SNR vs BER for 100 m POF')
-ylabel('BER')
-xlabel('SNR (dB)')
+%snr = 5:35;
+%figure()
+%semilogy(snr,ber,'-*')
+%title('SNR vs BER for 100 m POF')
+%ylabel('BER')
+%xlabel('SNR (dB)')
 %legend()
-saveas(gcf,'bernn.png')
-save('berTF','ber')
+%saveas(gcf,'bernn.png')
+save('berSymDeepTF_01','ber')
 

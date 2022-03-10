@@ -10,8 +10,6 @@ import numpy as np
 from tensorflow import keras
 from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import Dense, Dropout
-from tensorflow.keras.optimizers import SGD
-from tensorflow.keras.losses import MeanSquaredError
 
 start_time = time.time()
 snr = str(sys.argv[1])
@@ -22,23 +20,23 @@ if verboseFlag == 1:
 else:
     vb = 2
 
-samples = 3
-signals = 16
+symbols = 1
+signals = 64
 fiber_length = 100
 num_classes = 4
-batch_size = 32
+batch_size = 128
 epochs = 20
 
 print('SNR = ',snr)
-print('Test run')
-print('Samples = ', samples)
+print('Signals = ',signals)
+print('Symbols = ', symbols)
 print('Fiber Length = ', fiber_length)
 
 SNRs = str(snr).zfill(2)
 
 start_dir = '/home/alexandersalois/DataDrive/TF_data/'
 #start_dir += str(fiber_length).zfill(2)
-start_dir += str(samples).zfill(2) + '_samples/'
+start_dir += str(symbols).zfill(2) + '_symbols/'
 start_dir += str(signals).zfill(2) + '_signals/'
 
 # Load the data
@@ -71,44 +69,51 @@ print(x_train.shape, 'train samples')
 print(y_train.shape, 'train labels')
 print(x_test.shape, 'test samples')
 print(y_test.shape, 'test labels')
-#print('Label Examples:\n', x_train[0:9]);
-#print('Label Examples:\n', y_train[0:9]);
+print(x_val.shape, 'val samples')
+print(y_val.shape, 'val labels')
 
-
-# Formatting
-fmtLen = int(math.ceil(math.log(max(batch_size, y_train.shape[0]),10)))
 
 # Define the network
 model = Sequential()
-model.add(Dense(100, activation='sigmoid', input_dim=(samples)))
-model.add(Dense(num_classes, activation='sigmoid'))
+model.add(Dense(100, activation='relu', kernel_initializer='he_normal', input_dim=(16*symbols)))
+model.add(Dense(400, activation='relu', kernel_initializer='he_normal'))
+model.add(Dense(1000, activation='relu', kernel_initializer='he_normal'))
+model.add(Dense(1000, activation='relu', kernel_initializer='he_normal'))
+model.add(Dense(1000, activation='relu', kernel_initializer='he_normal'))
+model.add(Dense(400, activation='relu', kernel_initializer='he_normal'))
+model.add(Dense(100, activation='relu', kernel_initializer='he_normal'))
+model.add(Dense(40, activation='relu', kernel_initializer='he_normal'))
+model.add(Dense(num_classes, activation='softmax'))
 
 
 model.summary()
 
 model.compile(loss=keras.losses.CategoricalCrossentropy(),
-              optimizer=SGD())
-              #metrics=[keras.metrics.RootMeanSquaredError(name='rmse')])
+              optimizer=keras.optimizers.SGD(lr= 0.01, momentum= 0.9),
+              metrics=['accuracy'])
+
+es = keras.callbacks.EarlyStopping(monitor='val_accuracy', mode='auto', verbose=1)
 
 history = model.fit(x_train, y_train,
                     validation_data = (x_val, y_val),
                     batch_size=batch_size,
                     shuffle=True,
                     epochs=epochs,
-                    verbose=vb)
+                    verbose=vb,
+                    callbacks=[es])
 
 score = model.evaluate(x_train, y_train, verbose=vb)
-print('Final Training:', score)
-#print('Final Training RMSE:', score[1])
+print('Final Training loss:', score[0])
+print('Final Training acc:', score[1])
 
 score = model.evaluate(x_test, y_test, verbose=vb)
-print('Test:', score)
-#print('Test RMSE:', score[1])
+print('Test loss:', score[0])
+print('Test acc:', score[1])
 
-predictions = model.predict(x_test)
-matname = "predictionsSNR" + SNRs + ".mat"
-spio.savemat(matname, {'pred': predictions})
-savename = "deep_model_SNR" + SNRs + ".h5"
-model.save(savename)
+#predictions = model.predict(x_test)
+#matname = "predictionsSNR" + SNRs + ".mat"
+#spio.savemat(matname, {'pred': predictions})
+#savename = "class_model_SNR" + SNRs 
+#model.save(savename)
 
 print("--- %.2f seconds ---" % (time.time() - start_time))
