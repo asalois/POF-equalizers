@@ -7,7 +7,8 @@ function [berR]=noEqSNRvBER(fLen,iters)
 
 % load file
 % loadName = sprintf('pamSnr%02d/pam_snr_%02d_len_%04d_%04d',folder,folder,fLen*10,1);
-loadName = sprintf('pam_pow_%02d_len_%04d_%04d',19,fLen*10,1);
+% loadName = sprintf('pam_pow_%02d_len_%04d_%04d',19,fLen*10,3);
+loadName = sprintf('pam_pow_%02d_noFiber',19);
 load(loadName)
 
 M = 4;
