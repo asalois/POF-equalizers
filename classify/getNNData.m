@@ -26,7 +26,7 @@ for  rn = 1:numSigs
     myCell{fl/100,2,rn} = outSig;
 end
 %%
-[a, b, c] = size(myCell)
+[a, b, c] = size(myCell);
 M = 4;
 % symbolPeriod = log2(M)*2^pointsPerBit; % in samples
 symbolPeriod = 16;

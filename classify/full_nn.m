@@ -46,7 +46,8 @@ for snr = 5:35
 
 	%%
 	testSeq = cell2mat(data(1,3));
-	cell2mat(data(1,3)) = (testSeq - 0.5 ) * 6;
+	testseq = (testSeq - 0.5 ) * 6;
+	testIn = cell2mat(data(1,2));
 	seq = (testIn(1,:) - 0.5 ) * 6;
 	x = pamdemod(testSeq',4);
 	y_a = pamdemod(seq',4);
