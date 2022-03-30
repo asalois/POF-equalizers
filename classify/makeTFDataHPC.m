@@ -25,8 +25,6 @@ function makeTFData(snr,numSigs)
 	[b, c] = size(myCell)
 	M = 4;
 	symbolPeriod = 16;
-	startSNR = 5;
-	endSNR = 35;
 	symbols = 1; 
 	trainData = cell(3,c);
 	if numSigs <65
