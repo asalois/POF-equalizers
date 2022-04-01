@@ -7,57 +7,31 @@
 % prelim comands
 clc; clear; close all 
 tic
-ber = zeros(1,31);
-labels = cell(1,10);
+ber = zeros(5,31);
+M = 4;
+%% 
+samples = [1,2,4,8,16]
+for j = 1:length(samples)
+    for i = 1:31
+        snr = i + 4;
+        rname = sprintf('predictionsSNR%02d_%02d.mat',snr,samples(j));
+        try
+            load(rname);
+        catch
+            break
+        end
+        [~,maxIndx] = max(pred',[],1);
+        predSeq = -1 * pammod(maxIndx -1,M);  
+        [~,maxIndx] = max(testTarget',[],1);
+        testSeq = -1 * pammod(maxIndx -1,M);  
+        x_b = pamdemod(testSeq,4);
+        y_b = pamdemod(predSeq,4);
+        [~, ber_dnn] = biterr(x_b,y_b);
+        ber(j,i) = ber_dnn;
+    end
 %%
-samples = 3
-signals = 64
-name = cellstr(sprintf('%d Samples',samples))
-labels(samples) = name;
-for i = 1:31
-	snr = i + 4;
-	rname = sprintf('predictionsSNR%02d.mat',snr);
-	load(rname);
-        predSeq = zeros(1,length(pred'));
- 	[~,maxIndx] = max(pred',[],1);
-        for z = 1:length(maxIndx)
-            if maxIndx(z) == 1
-                predSeq(z)=3;
-            elseif maxIndx(z) == 2
-                predSeq(z)=1;
-            elseif maxIndx(z) == 3
-                predSeq(z)=-1;
-            elseif maxIndx(z) == 4
-                predSeq(z)=-3;
-            end
-        end
-        targetSeq = zeros(1,length(testTarget'));
- 	[~,maxIndx] = max(testTarget',[],1);
-        for z = 1:length(maxIndx)
-            if maxIndx(z) == 1
-                testSeq(z)=3;
-            elseif maxIndx(z) == 2
-                testSeq(z)=1;
-            elseif maxIndx(z) == 3
-                testSeq(z)=-1;
-            elseif maxIndx(z) == 4
-                testSeq(z)=-3;
-            end
-        end
-	x_b = pamdemod(testSeq,4);
-	y_b = pamdemod(predSeq,4);
-	[~, ber_dnn] = biterr(x_b,y_b)
-	ber(i) = ber_dnn;
 end
+ber'
+saveName = 'berFilt';
+save(saveName,'ber')
 toc
-%%
-%snr = 5:35;
-%figure()
-%semilogy(snr,ber,'-*')
-%title('SNR vs BER for 100 m POF')
-%ylabel('BER')
-%xlabel('SNR (dB)')
-%legend()
-%saveas(gcf,'bernn.png')
-save('berSymDeepTF_01','ber')
-
