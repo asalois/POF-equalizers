@@ -22,24 +22,21 @@ filt = outSig1*scale;
 rx = 1.2*(rx -0.5) *6;
 inSig = (inSig -0.5) *6;
 
-%% cut
-start = 100;
-done = 16*10000*2;
-% done = 16*10*2;
-rx = rx(start:start+done);
-inSig = inSig(start:start+done);
-
 %% make filter
-filt(filt<0.005) = 0;
+filt(filt<0.005) = 0; % zero out small values
+
+% get inv in freq
 H = fft(filt);
 Hinv = 1./H;
 filt = ifft(Hinv);
-% filt = filt(60:80);
-filt(abs(filt)<0.0005) = 0;
-filt = filt/sum(filt);
+
+filt(abs(filt)<0.0005) = 0; % zeros out small values
+filt = filt/sum(filt); % scale
+
+%% make square filter
 n = 16;
 sq = ones(1,n);
-sq = sq /n; 
+sq = sq/n; 
 
 %% filter
 snr = 20;
@@ -92,7 +89,6 @@ title('Filtered and Tx')
 hold off
 
 saveas(gcf,'singleFilter.png')
-toc
 
 % douebl filter
 figure()
@@ -123,6 +119,7 @@ hold off
 
 saveas(gcf,'doubleFilter.png')
 toc
+
 %% eyes
 % symPer = 32;
 % offset = 12;
