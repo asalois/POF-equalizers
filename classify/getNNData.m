@@ -3,7 +3,8 @@
 % Created by Alexander Salois
 function [trainIn, trainTarget, testIn, testTarget, testSeq] = getNNData(snr,numSigs,isFiltered)
 myCell = cell(2,1);
-loadFilePath = "/home/alexandersalois/DataDrive/optSimData/";
+% loadFilePath = "/home/alexandersalois/DataDrive/optSimData/";
+loadFilePath = "C:/Users/asalo/ResearchMSU/OneDrive - Montana State University/optSimData/100Mbps/100m/19/";
 pow = 19;
 fl = 100;
 for  rn = 1:numSigs
@@ -27,7 +28,10 @@ samples = 4
 symbols = 1
 trainData = cell(3,c);
 %load('filterB')
-b=ones(1,8);
+n = 8;
+b=ones(1,n);
+b = b/n;
+delay = n -1;
 for i = 1:c
     outSig = myCell{2,i};
     inSig = myCell{1,i};
