@@ -1,7 +1,7 @@
 % Montana State University
 % Electrical & Computer Engineering Department
 % Created by Alexander Salois
-function [trainIn, trainTarget, testIn, testTarget, testSeq] = getNNData(snr,numSigs)
+function [trainIn, trainTarget, testIn, testTarget, testSeq] = getNNData(snr,numSigs,isFiltered)
 myCell = cell(2,1);
 loadFilePath = "/home/alexandersalois/DataDrive/optSimData/";
 pow = 19;
@@ -18,7 +18,7 @@ for  rn = 1:numSigs
     myCell{1,rn} = inSig;
     myCell{2,rn} = outSig;
 end
-clearvars -except myCell numSigs savePath snr
+clearvars -except myCell numSigs savePath snr isFiltered
 
 [b, c] = size(myCell);
 M = 4;
@@ -26,14 +26,22 @@ symbolPeriod = 16;
 samples = 4
 symbols = 1
 trainData = cell(3,c);
+%load('filterB')
+b=ones(1,8);
 for i = 1:c
     outSig = myCell{2,i};
     inSig = myCell{1,i};
     outSigSNR = awgn(outSig,snr,'measured');
     startOut = 16;
     selectIn = inSig(4:symbolPeriod:end);
+    filtered = filter(b,1,outSigSNR);
 
-    m = makeSymbolMat(outSigSNR,symbols,samples);
+    if isFiltered == true
+	input = filtered;
+    else
+	input = outSigSNR;
+    end
+    m = makeSymbolMat(input,symbols,samples);
     t = makeClassMat(selectIn,symbols);
     trainData{3,i} = selectIn(1:end -(symbols-1));
     trainData{2,i} = m;
