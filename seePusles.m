@@ -16,13 +16,15 @@ rx = rx - min(rx);
 rx = rx/max(rx);
 outSig1 = outSig1 -min(outSig1);
 scale = 1/max(outSig1);
-filt = outSig1*scale;
+imp = outSig1*scale;
+imp = imp/sum(imp);
 
 %% rescale [-3,3]
 rx = 1.2*(rx -0.5) *6;
 inSig = (inSig -0.5) *6;
 
 %% make filter
+filt = imp;
 filt(filt<0.005) = 0; % zero out small values
 
 % get inv in freq
@@ -33,38 +35,56 @@ filt = ifft(Hinv);
 filt(abs(filt)<0.0005) = 0; % zeros out small values
 filt = filt/sum(filt); % scale
 
+%% plot filter
+x = filter(filt,1,imp);
+y = filter(imp,1,filt);
+figure()
+subplot(3,1,1)
+plot(x)
+title('Impluse -> Inv Filt')
+
+subplot(3,1,2)
+plot(imp)
+title('Impluse')
+
+subplot(3,1,3)
+plot(filt)
+title('Inv Filt')
+saveas(gcf,'noSq.png')
+
 %% make square filter
-n = 16;
+n = 8;
 sq = ones(1,n);
 sq = sq/n; 
 
 %% filter
 snr = 20;
-delay = 66;
+delayImp = 68;
+delaySq = n -1;
 % noise
 rx_noise = awgn(rx,snr,'measured');
-filtSig = filter(filt,1,rx_noise);
-filtSig2 = filter(sq,1,filtSig);
+filtSig = filter(imp,1,rx_noise);
+filtSig2 = filter(sq,1,rx_noise);
 
 % no noise
-filtSig_no = filter(filt,1,rx);
-filtSig_no2 = filter(sq,1,filtSig_no);
+filtSig_no = filter(imp,1,rx);
+filtSig_no2 = filter(sq,1,rx);
 
 % manage delay
-filtSig = filtSig(delay:end);
-filtSig2 = filtSig2(delay:end);
-filtSig_no = filtSig_no(delay:end);
-filtSig_no2 = filtSig_no2(delay:end);
+filtSig = filtSig(delayImp:end);
+filtSig2 = filtSig2(delaySq:end);
+filtSig_no = filtSig_no(delayImp:end);
+filtSig_no2 = filtSig_no2(delaySq:end);
 
 %% plots
 start = 100;
 cut = 2^8;
 cut = start + cut;
 
-%single filter
+% impulse filter
 figure()
 subplot(2,2,1)
-plot(filt)
+plot(imp)
 title('Filter Coef.')
 
 subplot(2,2,2)
@@ -88,12 +108,12 @@ plot(filtSig(start:cut))
 title('Filtered and Tx')
 hold off
 
-saveas(gcf,'singleFilter.png')
+saveas(gcf,'impFilter.png')
 
-% douebl filter
+% square filter
 figure()
 subplot(2,2,1)
-plot(filt)
+plot(sq)
 title('Filter Coef.')
 
 subplot(2,2,2)
@@ -117,7 +137,7 @@ plot(filtSig2(start:cut))
 title('Filtered and Tx')
 hold off
 
-saveas(gcf,'doubleFilter.png')
+saveas(gcf,'sqFilter.png')
 toc
 
 %% eyes
