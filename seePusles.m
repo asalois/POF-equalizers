@@ -11,6 +11,7 @@ load('pam_pow_19_len_1000_0033.mat')
 rx = real(InNode{1,1}.Signal.samples);
 inSig = real(InNode{1,2}.Signal.samples);
 
+
 %% rescale [0,1]
 rx = rx - min(rx);
 rx = rx/max(rx);
@@ -20,7 +21,7 @@ imp = outSig1*scale;
 imp = imp/sum(imp);
 
 %% rescale [-3,3]
-rx = 1.2*(rx -0.5) *6;
+% rx = (rx -0.5) *6;
 inSig = (inSig -0.5) *6;
 
 %% make filter
@@ -60,7 +61,7 @@ sq = sq/n;
 %% filter
 snr = 20;
 delayImp = 68;
-delaySq = n -1;
+delaySq = n/2;
 % noise
 rx_noise = awgn(rx,snr,'measured');
 filtSig = filter(imp,1,rx_noise);
@@ -73,11 +74,15 @@ filtSig_no2 = filter(sq,1,rx);
 % manage delay
 filtSig = filtSig(delayImp:end);
 filtSig2 = filtSig2(delaySq:end);
+% filtSigScale = filtSig;
+% filtSig2Scale = filtSig2;
+filtSigScale = 6*(filtSig - 0.5);
+filtSig2Scale = 6*(filtSig2 - 0.5);
 filtSig_no = filtSig_no(delayImp:end);
 filtSig_no2 = filtSig_no2(delaySq:end);
 
 %% plots
-start = 100;
+start = 1;
 cut = 2^8;
 cut = start + cut;
 
@@ -104,7 +109,7 @@ hold off
 subplot(2,2,4)
 hold on
 plot(inSig(start:cut))
-plot(filtSig(start:cut))
+plot(filtSigScale(start:cut))
 title('Filtered and Tx')
 hold off
 
@@ -133,7 +138,7 @@ hold off
 subplot(2,2,4)
 hold on
 plot(inSig(start:cut))
-plot(filtSig2(start:cut))
+plot(filtSig2Scale(start:cut))
 title('Filtered and Tx')
 hold off
 
