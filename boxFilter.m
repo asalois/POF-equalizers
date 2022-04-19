@@ -38,9 +38,10 @@ end
 if len == 1
     selectOut = outSigSNR(startOut:symbolPeriod:end);
 
-    if snr == 32 & eyes
-        sel = 100:2^15;
-        eyediagram(outSigSNR(sel),symbolPeriod,symbolPeriod,startOut-1);
+    if snr == 100 & eyes
+        scaled = (outSigSNR -0.5)*6;
+        sel = 100:2^16;
+        eyediagram(scaled(sel),2*symbolPeriod,2*symbolPeriod);
         name = sprintf("eye_filtered_samples_%02d.png",len);
         saveas(gcf,name)
     end
@@ -52,12 +53,14 @@ else
 
     filtered = filter(bk,1,outSigSNR);
     filtered = filtered(delay+1:end-(symbolPeriod - delay));
+    
     selectOut = filtered(startOut:symbolPeriod:end);
 
 
-    if snr == 32 & eyes
-        sel = 100:2^15;
-        eyediagram(filtered(sel),symbolPeriod,symbolPeriod,startOut);
+    if snr == 100 & eyes
+        scaled = (filtered -0.5)*6;
+        sel = 100:2^16;
+        eyediagram(scaled(sel),2*symbolPeriod,2*symbolPeriod);
         name = sprintf("eye_filtered_samples_%02d.png",len);
         saveas(gcf,name)
     end
