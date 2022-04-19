@@ -3,7 +3,6 @@
 % Created by Alexander Salois
 function ber = boxFilter(len,snr,eyes)
 
-
 loadFilePath = "H:/OneDrive - Montana State University/optSimData/100Mbps/100m/19/";
 pow = 19;
 fl = 100;
@@ -38,7 +37,7 @@ end
 if len == 1
     selectOut = outSigSNR(startOut:symbolPeriod:end);
 
-    if snr == 100 & eyes
+    if eyes
         scaled = (outSigSNR -0.5)*6;
         sel = 100:2^16;
         eyediagram(scaled(sel),2*symbolPeriod,2*symbolPeriod);
@@ -53,11 +52,11 @@ else
 
     filtered = filter(bk,1,outSigSNR);
     filtered = filtered(delay+1:end-(symbolPeriod - delay));
-    
+
     selectOut = filtered(startOut:symbolPeriod:end);
 
 
-    if snr == 100 & eyes
+    if eyes
         scaled = (filtered -0.5)*6;
         sel = 100:2^16;
         eyediagram(scaled(sel),2*symbolPeriod,2*symbolPeriod);
@@ -75,9 +74,4 @@ bitsIn = pamdemod(selectIn,M);
 bitsOut = pamdemod(selectOut,M);
 
 [errs, ber] = biterr(bitsIn,bitsOut);
-% end
-% [ber, idx] = min(bers);
-% if snr == 35
-%     idx
-%     bers;
-% end
+end
