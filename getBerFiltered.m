@@ -7,24 +7,24 @@ rng(123)
 tic
 
 %%
-snrs = 1:50
+snrs = 1:40
 lens = [1 2 4 8 16]
 labels = cell(size(lens));
 bers = zeros(length(lens),length(snrs));
 %%
 for j = 1:length(lens)
     name = sprintf("%d samples",lens(j));
-    labels(j) = {name}; 
+    labels(j) = {name}
     for i = 1:length(snrs)
         bers(j,i) = boxFilter(lens(j),snrs(i),false);
     end
 end
 
 %%
-lens = [1 2:2:16]
-for j = 1:length(lens)
-    boxFilter(lens(j),100,true);
-end
+% lens = [1 2:2:16]
+% for j = 1:length(lens)
+%     boxFilter(lens(j),25,true);
+% end
 %%
 labels(1) = {"No Filtering"};
 figure()
@@ -35,7 +35,7 @@ legend(labels,'Location','southwest')
 % titleName = sprintf('EQs for %d m of POF',fiberLength);
 % title(titleName)
 % saveFigureName = sprintf('EqsSpanfor%02dmPOF.png',fiberLength);
-saveas(gcf,"boxFiltering.png")
+saveas(gcf,"boxFiltering40.png")
 % saveName = sprintf('EqsSpanfor%02dmPOF',fiberLength);
 % save(saveName)
 toc

@@ -3,9 +3,9 @@
 % Created by Alexander Salois
 function ber = boxFilter(len,snr,eyes)
 
-loadFilePath = "H:/OneDrive - Montana State University/optSimData/100Mbps/100m/19/";
+loadFilePath = "H:/OneDrive - Montana State University/optSimData/100Mbps/050m/19/";
 pow = 19;
-fl = 100;
+fl = 50;
 M = 4;
 symbolPeriod = 16;
 rng(snr)
